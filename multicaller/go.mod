@@ -1,4 +1,4 @@
-module multicaller
+module github.com/tjudice/ethutil/multicaller
 
 go 1.20
 
