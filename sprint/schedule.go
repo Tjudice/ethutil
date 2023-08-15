@@ -7,7 +7,16 @@ import (
 	"time"
 )
 
-func (s *Sprint) schedulePendingTasks(ctx context.Context, cInfo *collectorInfo, newBlock int64) error {
+func (s *Sprint) schedulePendingTasks(ctx context.Context, id TaskID, newBlock int64) error {
+	collectorInfo, ok := s.collectors[id]
+	if !ok {
+		return fmt.Errorf("Error: collector with id %s not found", id)
+	}
+	lastBlock, err := s.manager.GetTaskScheduleProgress(ctx, id)
+	if err != nil {
+		return err
+	}
+	nextRangeStart := lastBlock + 1
 	return nil
 }
 
@@ -23,8 +32,8 @@ func (s *Sprint) scheduleNewCollectorRanges(ctx context.Context) error {
 	}
 	s.m.Lock()
 	defer s.m.Unlock()
-	for id, cInfo := range s.collectors {
-		err := s.schedulePendingTasks(cctx, cInfo, blockToScheduleWith)
+	for id := range s.collectors {
+		err := s.schedulePendingTasks(cctx, id, blockToScheduleWith)
 		if err != nil {
 			log.Printf("Error while scheduling new tasks for collector id %s: %s\n", id, err.Error())
 		}
