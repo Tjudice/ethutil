@@ -4,6 +4,7 @@ Ethutil provides on the go, easy to use packages and types for interacting with 
 # Packages
 
 [Sprint](https://github.com/Tjudice/ethutil/tree/master/sprint) - Collect and Maintain Up-To-Date Event Logs With Reorg Healing And Programmable Collection Schemas (Soon to be replaced)
+
 [Multicaller](https://github.com/Tjudice/ethutil/tree/master/multicaller) - Interface for making multi calls to improve contract state collection
 
 # Planned
