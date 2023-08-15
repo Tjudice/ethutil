@@ -24,7 +24,7 @@ func (s *Sprint) schedulePendingTasks(ctx context.Context, id TaskID, newBlock i
 	}
 	rangesToSchedule := generic.DivideRangeInclusive(nextRangeStart, newBlock, s.config.BlocksPerStage)
 	for _, rng := range rangesToSchedule {
-		s.manager.NewBatchJob(id, rng.Start, rng.End)
+		s.manager.InsertBatchJob(id, rng.Start, rng.End)
 	}
 	// TODO: Implement collector info update
 	_ = collectorInfo
