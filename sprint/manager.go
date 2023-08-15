@@ -13,7 +13,7 @@ type Scheduler interface {
 	// sprint has processed and completed, and not the most recent block that sprint has ran.
 	GetTaskCompletedProgress(ctx context.Context, id TaskID) (int64, error)
 	// Gets the last scheduled block for a given task. This is the last block for a given task ID that sprint has scheduled a task for
-	GetTaskScheduledProgress(ctx context.Context, id TaskID)
+	GetTaskScheduledProgress(ctx context.Context, id TaskID) (int64, error)
 	// Creates a new batch log with given ID, blockStart and blockEnd. The blockStart, blockEnd and ID are chosen by sprint.
 	NewBatchJob(id TaskID, blockStart, blockEnd int64) BatchLog
 }

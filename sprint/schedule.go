@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/tjudice/util/go/generic"
 )
 
 func (s *Sprint) schedulePendingTasks(ctx context.Context, id TaskID, newBlock int64) error {
@@ -12,11 +14,20 @@ func (s *Sprint) schedulePendingTasks(ctx context.Context, id TaskID, newBlock i
 	if !ok {
 		return fmt.Errorf("Error: collector with id %s not found", id)
 	}
-	lastBlock, err := s.manager.GetTaskScheduleProgress(ctx, id)
+	lastBlock, err := s.manager.GetTaskScheduledProgress(ctx, id)
 	if err != nil {
 		return err
 	}
 	nextRangeStart := lastBlock + 1
+	if nextRangeStart > newBlock {
+		return nil
+	}
+	rangesToSchedule := generic.DivideRangeInclusive(nextRangeStart, newBlock, s.config.BlocksPerStage)
+	for _, rng := range rangesToSchedule {
+		s.manager.NewBatchJob(id, rng.Start, rng.End)
+	}
+	// TODO: Implement collector info update
+	_ = collectorInfo
 	return nil
 }
 

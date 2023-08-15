@@ -6,7 +6,7 @@ type Config struct {
 	// The number of blocks per individual stage. Setting this number too high
 	// can cause RPC issues due to the number of events being returned. Balancing this
 	// along with the number of concurrent workers is important.
-	BlocksPerStage uint64
+	BlocksPerStage int64
 	// The number of concurrent workers to use when fetching data. This number should
 	// If using a rate-limited RPC, set this slightly below the rate limit, since
 	// the scheduler must request the current block number.
