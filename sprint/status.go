@@ -2,7 +2,6 @@ package sprint
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"tuxpa.in/a/zlog"
@@ -28,26 +27,6 @@ func (s *Sprint) logLoop() {
 		statusLog.Int("task_queue_size", len(s.executionQueue.taskQueue)+len(s.executionQueue.uploadSequence)).
 			Int("validation_queue_size", len(s.executionQueue.validationQueue)+len(s.executionQueue.validationSequence)).
 			Msg("status")
-	}
-}
-
-func (s *Sprint) EnsureUpdatingLoop() {
-	var originalBlock uint64
-	update_time := 30 * time.Second
-	if update_time < 5*time.Minute {
-		update_time = 5 * time.Minute
-	}
-	if update_time > time.Hour {
-		update_time = time.Hour
-	}
-	blockCheckInterval := time.NewTicker(update_time)
-	for {
-		<-blockCheckInterval.C
-		if originalBlock == s.m.CurrentBlock() {
-			log.Error().Msgf("BLOCK HAS NOT UPDATED IN %v KILLING CONTAINER", update_time)
-			os.Exit(1)
-		}
-		originalBlock = s.m.CurrentBlock()
 	}
 }
 

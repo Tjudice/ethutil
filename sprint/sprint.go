@@ -52,8 +52,6 @@ type SprintConfig struct {
 	ValidatorQueueSize int
 	// Sets verbosity
 	Verbose bool
-	// Disables automatic killswitch
-	DisableKillSwitch bool
 }
 
 func checkConfig(c *SprintConfig) error {
@@ -148,9 +146,6 @@ func (s *Sprint) Run(ctx context.Context) error {
 	}
 	s.lastSuccessfulBlock.Store(int64(lastScheduledBlock))
 	go s.logLoop()
-	if !s.c.DisableKillSwitch {
-		go s.EnsureUpdatingLoop()
-	}
 	// create tickers based on config
 	scheduleTicker := time.NewTicker(s.c.ScheduleInterval)
 	executeTicker := time.NewTicker(s.c.ExecuteInterval)
