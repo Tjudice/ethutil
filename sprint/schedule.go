@@ -26,7 +26,7 @@ func (s *Sprint) scheduleNewCollectorRanges(ctx context.Context) error {
 	for id, cInfo := range s.collectors {
 		err := s.schedulePendingTasks(cctx, cInfo, blockToScheduleWith)
 		if err != nil {
-			log.Println("Error while scheduling new tasks for collector id %s: %s", id, err.Error())
+			log.Printf("Error while scheduling new tasks for collector id %s: %s\n", id, err.Error())
 		}
 	}
 	return nil

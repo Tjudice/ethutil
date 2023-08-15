@@ -66,7 +66,7 @@ func (s *Sprint) Run(ctx context.Context) {
 		case <-tickSchedule.C:
 			err := s.scheduleNewCollectorRanges(ctx)
 			if err != nil {
-				log.Println("Error while getting live block: %s", err.Error())
+				log.Printf("Error while scheduling new collection tasks: %s\n", err.Error())
 			}
 		case <-tickExecute.C:
 		}
