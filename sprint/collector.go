@@ -1,6 +1,11 @@
 package sprint
 
-import "context"
+import (
+	"context"
+	"sync/atomic"
+
+	"github.com/ethereum/go-ethereum/core/types"
+)
 
 type Collector interface {
 	// The ID for the given collector. This should be unique, so that the manager can properly request up to date information for the given
@@ -30,12 +35,29 @@ type Keyable interface {
 }
 
 type SprintStage struct {
-	scheduleLog     BatchLog
-	AdditionalCalls []Call
+	collector      Collector
+	scheduleLog    BatchLog
+	additonalCalls []Call
+}
+
+func (s *SprintStage) AddCall(c Call) {
+	s.additonalCalls = append(s.additonalCalls, c)
 }
 
 type StageInteractor interface {
 	AddCall(c Call)
 }
 
-type StageData interface{}
+type StageData struct {
+	Blocks map[int64]*types.Block
+}
+
+type collectorInfo struct {
+	Status    CollectorStatus
+	collector Collector
+}
+
+type CollectorStatus struct {
+	HeadBlock int64
+	Pending   atomic.Int64
+}

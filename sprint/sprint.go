@@ -2,10 +2,14 @@ package sprint
 
 import (
 	"context"
+	"log"
+	"sync"
 	"sync/atomic"
+	"time"
 )
 
 type Sprinter interface {
+	AddCollector(startBlock int64, c Collector) error
 	Run(ctx context.Context)
 	Abort()
 	Status() Status
@@ -28,10 +32,45 @@ type Sprint struct {
 	// Manages the sprint fetcher
 	manager Manager
 	// Collectors, used for getting information in between a given block range
-	collectors []Collector
+	collectors map[TaskID]*collectorInfo
+	// Mutex
+	m sync.Mutex
+}
+
+func (s *Sprint) AddCollector(startBlock int64, c Collector) error {
+	s.m.Lock()
+	defer s.m.Unlock()
+	if _, ok := s.collectors[c.ID()]; ok {
+		return &ErrDuplicateCollectorID{c.ID()}
+	}
+	s.collectors[c.ID()] = &collectorInfo{
+		Status: CollectorStatus{
+			HeadBlock: startBlock - 1,
+		},
+		collector: c,
+	}
+	return nil
 }
 
 func (s *Sprint) Run(ctx context.Context) {
+	tickSchedule := time.NewTicker(s.config.ScheduleInterval)
+	tickExecute := time.NewTicker(s.config.ExecuteInterval)
+	for {
+		select {
+		case <-s.done:
+			log.Println("Done signal received, exiting")
+			return
+		case <-ctx.Done():
+			log.Println("Context cancelled, exiting")
+			return
+		case <-tickSchedule.C:
+			err := s.scheduleNewCollectorRanges(ctx)
+			if err != nil {
+				log.Println("Error while getting live block: %s", err.Error())
+			}
+		case <-tickExecute.C:
+		}
+	}
 }
 
 func (s *Sprint) Abort() {
