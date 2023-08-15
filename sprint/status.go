@@ -1,4 +1,4 @@
-package v2
+package sprint
 
 type Status struct {
 	Active          bool

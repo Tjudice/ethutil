@@ -1,4 +1,4 @@
-package v2
+package sprint
 
 import "context"
 
@@ -11,7 +11,9 @@ type Manager interface {
 type Scheduler interface {
 	// Should get the last succesful block that sprint has processed. The last successful block should be the highest block height
 	// sprint has processed and completed, and not the most recent block that sprint has ran.
-	GetLastSuccessfulBlock(context.Context) (int64, error)
+	GetTaskProgress(ctx context.Context, id TaskID) (int64, error)
+	// Creates a new batch log with given ID, blockStart and blockEnd. The blockStart, blockEnd and ID are chosen by sprint.
+	NewBatchJob(id TaskID, blockStart, blockEnd int64) BatchLog
 }
 
 type Storage interface {

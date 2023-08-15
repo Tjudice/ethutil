@@ -1,4 +1,4 @@
-package v2
+package sprint
 
 import "time"
 
@@ -7,8 +7,10 @@ type BatchLog interface {
 	BatchLogViewer
 }
 
+type TaskID string
+
 type BatchLogViewer interface {
-	Key() string
+	ID() TaskID
 	BlockStart() int64
 	BlockEnd() int64
 	Metadata() BatchMetadata
