@@ -10,6 +10,7 @@ type CoinbaseAPI interface {
 
 type MarketsAPI interface {
 	GetMarkets(ctx context.Context) ([]*Market, error)
+	GetMarket(ctx context.Context, marketId string) (*Market, error)
 }
 
 type UserAPI interface {

@@ -31,12 +31,12 @@ type Market struct {
 	HighBidLimitPercentage string `json:"high_bid_limit_percentage"`
 }
 
-const PRODUCTS_URL = "https://api.exchange.coinbase.com/products"
+const PRODUCTS_URL = "https://api.exchange.coinbase.com/products/"
 
 func (c *Client) GetMarkets(ctx context.Context) ([]*Market, error) {
-	res, err := jsonhttp.Get[[]*Market](ctx, c.cl, PRODUCTS_URL, nil)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	return jsonhttp.Get[[]*Market](ctx, c.cl, PRODUCTS_URL, nil)
+}
+
+func (c *Client) GetMarket(ctx context.Context, marketId string) (*Market, error) {
+	return jsonhttp.Get[*Market](ctx, c.cl, PRODUCTS_URL+marketId, nil)
 }
