@@ -16,20 +16,20 @@ func getWsClient() *coinbase.Client {
 	return coinbase.NewClient(acc)
 }
 
-// func TestSubscribeFull(t *testing.T) {
-// 	cl := getWsClient()
-// 	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"full"})
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	go func() {
-// 		for {
-// 			x := <-conn.C()
-// 			log.Println(x)
-// 		}
-// 	}()
-// 	time.Sleep(time.Minute)
-// }
+func TestSubscribeFull(t *testing.T) {
+	cl := getWsClient()
+	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"full"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Println(x)
+		}
+	}()
+	time.Sleep(time.Minute)
+}
 
 // func TestSubscribeTicker(t *testing.T) {
 // 	cl := getWsClient()
@@ -46,17 +46,17 @@ func getWsClient() *coinbase.Client {
 // 	time.Sleep(time.Minute)
 // }
 
-func TestSubscribeStatus(t *testing.T) {
-	cl := getWsClient()
-	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"status"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	go func() {
-		for {
-			x := <-conn.C()
-			log.Printf("%+v", x)
-		}
-	}()
-	time.Sleep(time.Minute)
-}
+// func TestSubscribeStatus(t *testing.T) {
+// 	cl := getWsClient()
+// 	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"status"})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	go func() {
+// 		for {
+// 			x := <-conn.C()
+// 			log.Printf("%+v", x)
+// 		}
+// 	}()
+// 	time.Sleep(time.Minute)
+// }

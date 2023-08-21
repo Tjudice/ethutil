@@ -6,6 +6,7 @@ type CoinbaseAPI interface {
 	MarketsAPI
 	UserAPI
 	TradeAPI
+	WebsocketAPI
 }
 
 type MarketsAPI interface {
@@ -24,3 +25,7 @@ type UserAPI interface {
 }
 
 type TradeAPI interface{}
+
+type WebsocketAPI interface {
+	Subscribe(ctx context.Context, products []string, channel []any) (*Conn, error)
+}

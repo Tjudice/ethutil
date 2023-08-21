@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -34,7 +35,9 @@ type WebsocketMessage interface {
 }
 
 func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
-	conn, _, err := websocket.DefaultDialer.Dial(COINBASE_EXCHANGE_WSS_URL, nil)
+	conn, _, err := websocket.DefaultDialer.Dial(COINBASE_EXCHANGE_WSS_URL, http.Header{
+		"Sec-WebSocket-Extensions": []string{"permessage-deflate; client_max_window_bits"},
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -64,6 +67,10 @@ func (c *Client) Subscribe(ctx context.Context, products []string, channels []an
 		return nil, err
 	}
 	return wsConn, nil
+}
+
+func (c *Client) Unsubscribe(ctx context.Context, products []string, channels []any) error {
+	return nil
 }
 
 func (c *Conn) Listen() error {
