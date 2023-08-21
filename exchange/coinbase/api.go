@@ -11,6 +11,9 @@ type CoinbaseAPI interface {
 type MarketsAPI interface {
 	GetMarkets(ctx context.Context) ([]*Market, error)
 	GetMarket(ctx context.Context, marketId string) (*Market, error)
+	GetMarketBookLevel1(ctx context.Context, marketId string) (*Orderbook, error)
+	GetMarketBookLevel2(ctx context.Context, marketId string) (*Orderbook, error)
+	GetMarketBookLevel3(ctx context.Context, marketId string) (*Orderbook, error)
 }
 
 type UserAPI interface {
