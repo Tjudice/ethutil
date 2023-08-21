@@ -97,6 +97,8 @@ var messageTypeChoice = map[string]WebsocketMessage{
 	"match":         &Match{},
 	"ticker":        &WsTicker{},
 	"status":        &Status{},
+	"change":        &Change{},
+	"activate":      &Activate{},
 }
 
 func parseMessage(bts []byte) (WebsocketMessage, error) {
@@ -292,4 +294,47 @@ func (s *Status) Seq() int64 {
 
 func (s *Status) Clone() WebsocketMessage {
 	return new(Status)
+}
+
+type Change struct {
+	Reason    string    `json:"reason"`
+	Time      time.Time `json:"time"`
+	OrderId   string    `json:"order_id"`
+	Side      string    `json:"side"`
+	ProductId string    `json:"product_id"`
+	OldSize   float64   `json:"old_size,string"`
+	NewSize   float64   `json:"new_size,string"`
+	OldPrice  float64   `json:"old_price,string"`
+	NewPrice  float64   `json:"new_price,string"`
+	Sequence  int64     `json:"sequence"`
+}
+
+func (s *Change) Seq() int64 {
+	return s.Sequence
+}
+
+func (s *Change) Clone() WebsocketMessage {
+	return new(Change)
+}
+
+type Activate struct {
+	ProductId string  `json:"product_id"`
+	Timestamp float64 `json:"timestamp,string"`
+	UserId    int     `json:"user_id,string"`
+	ProfileId string  `json:"profile_id"`
+	OrderId   string  `json:"order_id"`
+	StopType  string  `json:"stop_type"`
+	Side      string  `json:"side"`
+	StopPrice float64 `json:"stop_price,string"`
+	Size      float64 `json:"size,string"`
+	Funds     float64 `json:"funds,string"`
+	Private   bool    `json:"private"`
+}
+
+func (s *Activate) Seq() int64 {
+	return 0
+}
+
+func (s *Activate) Clone() WebsocketMessage {
+	return new(Activate)
 }
