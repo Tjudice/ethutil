@@ -52,11 +52,20 @@ import (
 // 	}
 // }
 
-func TestGetMarketStats(t *testing.T) {
+// func TestGetMarketStats(t *testing.T) {
+// 	cl := coinbase.NewClient()
+// 	stats, err := cl.GetMarketStats(context.TODO(), "btc-usd")
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	log.Printf("%+v", stats)
+// }
+
+func TestGetMarketTicker(t *testing.T) {
 	cl := coinbase.NewClient()
-	stats, err := cl.GetMarketStats(context.TODO(), "btc-usd")
+	ticker, err := cl.GetMarketTicker(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("%+v", stats)
+	log.Println(ticker)
 }
