@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"testing"
-	"time"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
 )
@@ -42,13 +41,22 @@ import (
 // 	}
 // }
 
-func TestCandles(t *testing.T) {
+// func TestCandles(t *testing.T) {
+// 	cl := coinbase.NewClient()
+// 	cns, err := cl.GetMarketCandles(context.TODO(), "btc-usd", 60, int(time.Now().Unix()-600), int(time.Now().Unix()))
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	for _, cn := range *cns {
+// 		log.Printf("%+v", cn)
+// 	}
+// }
+
+func TestGetMarketStats(t *testing.T) {
 	cl := coinbase.NewClient()
-	cns, err := cl.GetMarketCandles(context.TODO(), "btc-usd", 60, int(time.Now().Unix()-600), int(time.Now().Unix()))
+	stats, err := cl.GetMarketStats(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, cn := range *cns {
-		log.Printf("%+v", cn)
-	}
+	log.Printf("%+v", stats)
 }

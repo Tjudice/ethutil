@@ -14,6 +14,7 @@ type MarketsAPI interface {
 	GetMarketBookLevel1(ctx context.Context, marketId string) (*Orderbook, error)
 	GetMarketBookLevel2(ctx context.Context, marketId string) (*Orderbook, error)
 	GetMarketBookLevel3(ctx context.Context, marketId string) (*Orderbook, error)
+	GetMarketCandles(ctx context.Context, marketId string) (*Candles, error)
 }
 
 type UserAPI interface {

@@ -15,24 +15,24 @@ type Market struct {
 	ID          string `json:"id"`
 	DisplayName string `json:"display_name"`
 	// Base Currency Info
-	BaseCurrency  string `json:"base_currency"`
-	BaseIncrement string `json:"base_increment"`
+	BaseCurrency  string  `json:"base_currency"`
+	BaseIncrement float64 `json:"base_increment,string"`
 	// Quote Currency Info
-	QuoteCurrency  string `json:"quote_currency"`
-	QuoteIncrement string `json:"quote_increment"`
+	QuoteCurrency  string  `json:"quote_currency"`
+	QuoteIncrement float64 `json:"quote_increment,string"`
 	// Market Parameters
-	MinMarketFunds         string `json:"min_market_funds"`
-	TradingDisabled        bool   `json:"trading_disabled"`
-	MarginEnabled          bool   `json:"margin_enabled"`
-	PostOnly               bool   `json:"post_only"`
-	LimitOnly              bool   `json:"limit_only"`
-	CancelOnly             bool   `json:"cancel_only"`
-	MaxSlippage            string `json:"max_slippage_percentage"`
-	FxStablecoin           bool   `json:"fx_stablecoin"`
-	Status                 string `json:"status"`
-	StatusMessage          string `json:"status_message"`
-	AuctionMode            bool   `json:"auction_mode"`
-	HighBidLimitPercentage string `json:"high_bid_limit_percentage"`
+	MinMarketFunds         float64 `json:"min_market_funds,string"`
+	TradingDisabled        bool    `json:"trading_disabled"`
+	MarginEnabled          bool    `json:"margin_enabled"`
+	PostOnly               bool    `json:"post_only"`
+	LimitOnly              bool    `json:"limit_only"`
+	CancelOnly             bool    `json:"cancel_only"`
+	MaxSlippage            float64 `json:"max_slippage_percentage,string"`
+	FxStablecoin           bool    `json:"fx_stablecoin"`
+	Status                 string  `json:"status"`
+	StatusMessage          string  `json:"status_message"`
+	AuctionMode            bool    `json:"auction_mode"`
+	HighBidLimitPercentage string  `json:"high_bid_limit_percentage"`
 }
 
 const PRODUCTS_URL = "https://api.exchange.coinbase.com/products/"
@@ -217,4 +217,20 @@ func makeCandleURL(marketId string, granularity, start, end int) string {
 		url = url + "&start=" + strconv.FormatInt(int64(start), 10) + "&end=" + strconv.FormatInt(int64(end), 10)
 	}
 	return url
+}
+
+type Stats struct {
+	Open      float64 `json:"open,string"`
+	High      float64 `json:"high,string"`
+	Low       float64 `json:"low,string"`
+	Last      float64 `json:"last,string"`
+	Volume    float64 `json:"volume,string"`
+	Volume30D float64 `json:"volume_30day,string"`
+}
+
+const MARKET_STATS_URL = "https://api.exchange.coinbase.com/products/%s/stats"
+
+func (c *Client) GetMarketStats(ctx context.Context, marketId string) (*Stats, error) {
+	return jsonhttp.Get[*Stats](ctx, c.cl, fmt.Sprintf(MARKET_STATS_URL, marketId), nil)
+
 }
