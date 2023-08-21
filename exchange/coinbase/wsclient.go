@@ -2,12 +2,12 @@ package coinbase
 
 import (
 	"context"
-	"log"
 
 	"github.com/gorilla/websocket"
 )
 
 type Conn struct {
+	ch   chan WebsocketMessage
 	conn *websocket.Conn
 	auth *AccountAuth
 }
@@ -25,7 +25,9 @@ type SignedSubscribeMsg struct {
 	*SignedMessage
 }
 
-func Subscribe(ctx context.Context, a *AccountAuth, products []string, channels []any) (*Conn, error) {
+type WebsocketMessage interface{}
+
+func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
 	conn, _, err := websocket.DefaultDialer.Dial(COINBASE_EXCHANGE_WSS_URL, nil)
 	if err != nil {
 		return nil, err
@@ -35,7 +37,7 @@ func Subscribe(ctx context.Context, a *AccountAuth, products []string, channels 
 		ProductIds: products,
 		Channels:   channels,
 	}
-	signed, err := SignWebsocket(a)
+	signed, err := SignWebsocket(c.auth)
 	if err != nil {
 		return nil, err
 	}
@@ -46,23 +48,37 @@ func Subscribe(ctx context.Context, a *AccountAuth, products []string, channels 
 	if err != nil {
 		return nil, err
 	}
-	c := &Conn{
+	wsConn := &Conn{
 		conn: conn,
-		auth: a,
+		auth: c.auth,
+		ch:   make(chan WebsocketMessage),
 	}
-	go c.Listen()
+	go wsConn.Listen()
 	if err != nil {
 		return nil, err
 	}
-	return c, nil
+	return wsConn, nil
 }
 
 func (c *Conn) Listen() error {
+	defer c.conn.Close()
 	for {
 		_, msg, err := c.conn.ReadMessage()
 		if err != nil {
-			panic(err)
+			return err
 		}
-		log.Println(string(msg))
+		parsed, err := parseMessage(msg)
+		if err != nil {
+			return err
+		}
+		c.ch <- parsed
 	}
+}
+
+func (c *Conn) C() <-chan WebsocketMessage {
+	return c.ch
+}
+
+func parseMessage(bts []byte) (WebsocketMessage, error) {
+	return nil, nil
 }

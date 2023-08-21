@@ -5,11 +5,13 @@ import (
 )
 
 type Client struct {
-	cl *http.Client
+	cl   *http.Client
+	auth *AccountAuth
 }
 
-func NewClient() *Client {
+func NewClient(auth *AccountAuth) *Client {
 	return &Client{
-		cl: http.DefaultClient,
+		cl:   http.DefaultClient,
+		auth: auth,
 	}
 }

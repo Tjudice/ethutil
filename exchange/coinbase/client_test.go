@@ -3,14 +3,21 @@ package coinbase_test
 import (
 	"context"
 	"log"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
 )
 
+func getClient() *coinbase.Client {
+	acctEnv := os.Getenv("AUTH_FILE_PATH")
+	acc, _ := coinbase.LoadAccount(acctEnv)
+	return coinbase.NewClient(acc)
+}
+
 func TestGetMarkets(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	res, err := cl.GetMarkets(context.TODO())
 	if err != nil {
 		t.Fatal(err)
@@ -21,7 +28,7 @@ func TestGetMarkets(t *testing.T) {
 }
 
 func TestGetbook12(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	book, err := cl.GetMarketBookLevel2(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
@@ -32,7 +39,7 @@ func TestGetbook12(t *testing.T) {
 }
 
 func TestGetbook3(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	book, err := cl.GetMarketBookLevel3(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
@@ -43,7 +50,7 @@ func TestGetbook3(t *testing.T) {
 }
 
 func TestCandles(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	cns, err := cl.GetMarketCandles(context.TODO(), "btc-usd", 60, int(time.Now().Unix()-600), int(time.Now().Unix()))
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +61,7 @@ func TestCandles(t *testing.T) {
 }
 
 func TestGetMarketStats(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	stats, err := cl.GetMarketStats(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
@@ -63,7 +70,7 @@ func TestGetMarketStats(t *testing.T) {
 }
 
 func TestGetMarketTicker(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	ticker, err := cl.GetMarketTicker(context.TODO(), "btc-usd")
 	if err != nil {
 		t.Fatal(err)
@@ -72,7 +79,7 @@ func TestGetMarketTicker(t *testing.T) {
 }
 
 func TestGetMarketTrades(t *testing.T) {
-	cl := coinbase.NewClient()
+	cl := getClient()
 	trades, err := cl.GetMarketTrades(context.TODO(), "btc-usd", 0)
 	if err != nil {
 		t.Fatal(err)
