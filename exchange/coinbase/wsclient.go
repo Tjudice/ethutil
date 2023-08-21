@@ -29,6 +29,8 @@ type SignedSubscribeMsg struct {
 }
 
 type WebsocketMessage interface {
+	Seq() int64
+	Clone() WebsocketMessage
 }
 
 func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
@@ -88,11 +90,12 @@ type MessageType struct {
 }
 
 var messageTypeChoice = map[string]WebsocketMessage{
-	"subscriptions": Subscriptions{},
-	"done":          Done{},
-	"received":      Received{},
-	"open":          Open{},
-	"match":         Match{},
+	"subscriptions": &Subscriptions{},
+	"done":          &Done{},
+	"received":      &Received{},
+	"open":          &Open{},
+	"match":         &Match{},
+	"ticker":        &WsTicker{},
 }
 
 func parseMessage(bts []byte) (WebsocketMessage, error) {
@@ -101,11 +104,12 @@ func parseMessage(bts []byte) (WebsocketMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	typedMessage, ok := messageTypeChoice[msgType.Type]
+	schem, ok := messageTypeChoice[msgType.Type]
 	if !ok {
 		log.Println(msgType.Type)
 		log.Println(string(bts))
 	}
+	typedMessage := schem.Clone()
 	err = json.Unmarshal(bts, &typedMessage)
 	if err != nil {
 		log.Println(err.Error())
@@ -123,8 +127,12 @@ type ChannelSubscription struct {
 	ProductIds []string `json:"product_ids"`
 }
 
-func (s Subscriptions) Seq() int64 {
+func (s *Subscriptions) Seq() int64 {
 	return 0
+}
+
+func (s *Subscriptions) Clone() WebsocketMessage {
+	return new(Subscriptions)
 }
 
 type Done struct {
@@ -138,8 +146,12 @@ type Done struct {
 	Sequence      int64     `json:"sequence"`
 }
 
-func (s Done) Seq() int64 {
+func (s *Done) Seq() int64 {
 	return s.Sequence
+}
+
+func (s *Done) Clone() WebsocketMessage {
+	return new(Done)
 }
 
 type Received struct {
@@ -153,8 +165,12 @@ type Received struct {
 	Sequence  int64     `json:"sequence"`
 }
 
-func (s Received) Seq() int64 {
+func (s *Received) Seq() int64 {
 	return s.Sequence
+}
+
+func (s *Received) Clone() WebsocketMessage {
+	return new(Received)
 }
 
 type Open struct {
@@ -167,8 +183,12 @@ type Open struct {
 	Sequence      int64     `json:"sequence"`
 }
 
-func (s Open) Seq() int64 {
+func (s *Open) Seq() int64 {
 	return s.Sequence
+}
+
+func (s *Open) Clone() WebsocketMessage {
+	return new(Open)
 }
 
 type Match struct {
@@ -183,6 +203,37 @@ type Match struct {
 	Sequence     int64     `json:"sequence"`
 }
 
-func (s Match) Seq() int64 {
+func (s *Match) Seq() int64 {
 	return s.Sequence
+}
+
+func (s *Match) Clone() WebsocketMessage {
+	return new(Match)
+}
+
+type WsTicker struct {
+	ProductId   string    `json:"product_id"`
+	Price       float64   `json:"price,string"`
+	Open24H     float64   `json:"open_24h,string"`
+	Volume24H   float64   `json:"volume_24h,string"`
+	Low24H      float64   `json:"low_24h,string"`
+	High24H     float64   `json:"high_24h,string"`
+	Volume30D   float64   `json:"volume_30d,string"`
+	BestBid     float64   `json:"best_bid,string"`
+	BestBidSize float64   `json:"best_bid_size,string"`
+	BestAsk     float64   `json:"best_ask,string"`
+	BestAskSize float64   `json:"best_ask_size,string"`
+	Side        string    `json:"side"`
+	Time        time.Time `json:"time"`
+	TradeId     int64     `json:"trade_id"`
+	LastSize    float64   `json:"last_size,string"`
+	Sequence    int64     `json:"sequence"`
+}
+
+func (s *WsTicker) Seq() int64 {
+	return s.Sequence
+}
+
+func (s *WsTicker) Clone() WebsocketMessage {
+	return new(WsTicker)
 }
