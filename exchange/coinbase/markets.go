@@ -30,6 +30,7 @@ type Market struct {
 	MaxSlippage            float64 `json:"max_slippage_percentage,string"`
 	FxStablecoin           bool    `json:"fx_stablecoin"`
 	Status                 string  `json:"status"`
+	Type                   string  `json:"type"`
 	StatusMessage          string  `json:"status_message"`
 	AuctionMode            bool    `json:"auction_mode"`
 	HighBidLimitPercentage string  `json:"high_bid_limit_percentage"`

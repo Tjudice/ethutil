@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/websocket"
 )
 
@@ -96,6 +97,7 @@ var messageTypeChoice = map[string]WebsocketMessage{
 	"open":          &Open{},
 	"match":         &Match{},
 	"ticker":        &WsTicker{},
+	"status":        &Status{},
 }
 
 func parseMessage(bts []byte) (WebsocketMessage, error) {
@@ -108,6 +110,7 @@ func parseMessage(bts []byte) (WebsocketMessage, error) {
 	if !ok {
 		log.Println(msgType.Type)
 		log.Println(string(bts))
+		panic("a")
 	}
 	typedMessage := schem.Clone()
 	err = json.Unmarshal(bts, &typedMessage)
@@ -236,4 +239,57 @@ func (s *WsTicker) Seq() int64 {
 
 func (s *WsTicker) Clone() WebsocketMessage {
 	return new(WsTicker)
+}
+
+type Currency struct {
+	Id                string     `json:"id"`
+	Name              string     `json:"name"`
+	MinSize           float64    `json:"min_size,string"`
+	Status            string     `json:"status"`
+	FundingAccountId  string     `json:"funding_account_id"`
+	StatusMessage     string     `json:"status_message"`
+	MaxPrecision      float64    `json:"max_precision,string"`
+	ConvertibleTo     []any      `json:"convertible_to"`
+	Details           *Details   `json:"details"`
+	DefaultNetwork    string     `json:"default_network"`
+	SupportedNetworks []*Network `json:"supported_networks"`
+}
+
+type Details struct {
+	Type                  string   `json:"type"`
+	Symbol                string   `json:"symbol"`
+	Networkconfirmations  int      `json:"network_confirmations"`
+	SortOrder             int      `json:"sort_order"`
+	CryptoAddressLink     string   `json:"crypto_address_link"`
+	CryptoTransactionLink string   `json:"crypto_transaction_link"`
+	PushPaymentMethods    []string `json:"push_payment_methods"`
+	MinWithdrawalAmount   float64  `json:"min_withdrawal_amount,string"`
+	MaxWithdrawalAmount   float64  `json:"max_withdrawal_amount,string"`
+}
+
+type Network struct {
+	Id                    string         `json:"id"`
+	Name                  string         `json:"name"`
+	Status                string         `json:"status"`
+	ContractAddress       common.Address `json:"contract_address"`
+	CryptoAddressLink     string         `json:"crypto_address_link"`
+	CryptoTransactionLink string         `json:"crypto_transaction_link"`
+	MinWithdrawalAmount   float64        `json:"min_withdrawal_amount,string"`
+	MaxWithdrawalAmount   float64        `json:"max_withdrawal_amount,string"`
+	Networkconfirmations  int            `json:"network_confirmations"`
+	ProcessingTimeSeconds int            `json:"processing_time_seconds"`
+	NetworkMap            any            `json:"network_map"`
+}
+
+type Status struct {
+	Currencies []*Currency `json:"currencies"`
+	Markets    []*Market   `json:"products"`
+}
+
+func (s *Status) Seq() int64 {
+	return 0
+}
+
+func (s *Status) Clone() WebsocketMessage {
+	return new(Status)
 }
