@@ -338,3 +338,10 @@ func (s *Activate) Seq() int64 {
 func (s *Activate) Clone() WebsocketMessage {
 	return new(Activate)
 }
+
+type Snapshot struct{}
+
+type L2Update struct{}
+
+// https://docs.cloud.coinbase.com/exchange/docs/websocket-channels#l3-schema
+type Level3 struct{}
