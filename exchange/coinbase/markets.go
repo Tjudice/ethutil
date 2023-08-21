@@ -73,12 +73,21 @@ func (o *OrderMarshalling) UnmarshalJSON(bts []byte) error {
 	if err != nil {
 		return err
 	}
+	var next [3]json.RawMessage
 	orders := make([]*Order, 0, len(orderArray))
 	for _, currOrder := range orderArray {
-		nextOrder := &Order{}
-		orderVars := []interface{}{&FloatStringWrapper{&nextOrder.Price}, &FloatStringWrapper{&nextOrder.Amount}, &nextOrder.NumOrders}
-		err := json.Unmarshal(currOrder, &orderVars)
+		err := json.Unmarshal(currOrder, &next)
 		if err != nil {
+			return err
+		}
+		nextOrder := &Order{}
+		if err := unmarshalFloatString(next[0], &nextOrder.Price); err != nil {
+			return err
+		}
+		if err := unmarshalFloatString(next[1], &nextOrder.Amount); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(next[2], &nextOrder.NumOrders); err != nil {
 			return err
 		}
 		orders = append(orders, nextOrder)
@@ -115,12 +124,21 @@ func (o *Order3Marshalling) UnmarshalJSON(bts []byte) error {
 	if err != nil {
 		return err
 	}
+	var next [3]json.RawMessage
 	orders := make([]*Order3, 0, len(orderArray))
 	for _, currOrder := range orderArray {
-		nextOrder := &Order3{}
-		orderVars := []interface{}{&FloatStringWrapper{&nextOrder.Price}, &FloatStringWrapper{&nextOrder.Amount}, &nextOrder.OrderID}
-		err := json.Unmarshal(currOrder, &orderVars)
+		err := json.Unmarshal(currOrder, &next)
 		if err != nil {
+			return err
+		}
+		nextOrder := &Order3{}
+		if err := unmarshalFloatString(next[0], &nextOrder.Price); err != nil {
+			return err
+		}
+		if err := unmarshalFloatString(next[1], &nextOrder.Amount); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(next[2], &nextOrder.OrderID); err != nil {
 			return err
 		}
 		orders = append(orders, nextOrder)
@@ -135,4 +153,20 @@ func (c *Client) GetMarketBookLevel3(ctx context.Context, marketId string) (*Ord
 
 func makeBookURL(marketId string, level int) string {
 	return fmt.Sprintf(BOOK_URL, marketId, level)
+}
+
+type Candle struct{}
+
+const MARKET_CANDLES_URL = "https://api.exchange.coinbase.com/products/%s/candles?granularity=%d"
+
+func (c *Client) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) ([]*Candle, error) {
+	return nil, nil
+}
+
+func makeCandleURL(marketId string, granularity, start, end int) string {
+	url := fmt.Sprintf(MARKET_CANDLES_URL, marketId, granularity)
+	if start != 0 && end != 0 {
+		url = url + "&start=" + string(start) + "&end=" + string(end)
+	}
+	return url
 }
