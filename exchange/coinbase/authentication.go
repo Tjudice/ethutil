@@ -109,33 +109,3 @@ func encodeBody(r *http.Request) (string, error) {
 	}
 	return string(marshalled), nil
 }
-
-// func Auth2(a *AccountAuth, endpoint string, r *http.Request) error {
-// 	access_timestamp := time.Now().Unix()
-// 	body, err := r.GetBody()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	bodyBts, err := io.ReadAll(body)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	marshalled, err := json.Marshal(bodyBts)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	message := strconv.FormatInt(access_timestamp, 10) + endpoint + string(marshalled)
-
-// 	r.Header.Set("ACCESS_KEY", a.API_KEY)
-
-// 	h := hmac.New(sha256.New, []byte(a.API_SECRET))
-// 	h.Write([]byte(message))
-
-// 	signature := hex.EncodeToString(h.Sum(nil))
-
-// 	r.Header.Set("ACCESS_SIGNATURE", signature)
-// 	r.Header.Set("ACCESS_", nonce)
-
-// 	return nil
-// }
