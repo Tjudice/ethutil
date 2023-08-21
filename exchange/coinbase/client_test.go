@@ -69,3 +69,14 @@ func TestGetMarketTicker(t *testing.T) {
 	}
 	log.Println(ticker)
 }
+
+func TestGetMarketTrades(t *testing.T) {
+	cl := coinbase.NewClient()
+	trades, err := cl.GetMarketTrades(context.TODO(), "btc-usd", 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, trade := range trades {
+		log.Println(trade)
+	}
+}

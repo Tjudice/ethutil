@@ -249,3 +249,17 @@ const MARKET_TICKER_URL = "https://api.exchange.coinbase.com/products/%s/ticker"
 func (c *Client) GetMarketTicker(ctx context.Context, marketId string) (*Ticker, error) {
 	return jsonhttp.Get[*Ticker](ctx, c.cl, fmt.Sprintf(MARKET_TICKER_URL, marketId), nil)
 }
+
+type Trade struct {
+	TradeID int64     `json:"trade_id"`
+	Side    string    `json:"side"`
+	Size    float64   `json:"size,string"`
+	Price   float64   `json:"price,string"`
+	Time    time.Time `json:"time"`
+}
+
+const MARKET_TRADES_URL = "https://api.exchange.coinbase.com/products/%s/trades?limit=%d"
+
+func (c *Client) GetMarketTrades(ctx context.Context, marketId string, limit int64) ([]*Trade, error) {
+	return jsonhttp.Get[[]*Trade](ctx, c.cl, fmt.Sprintf(MARKET_TRADES_URL, marketId, limit), nil)
+}
