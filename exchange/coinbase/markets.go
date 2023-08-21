@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/tjudice/util/go/clients/jsonhttp"
@@ -155,18 +156,65 @@ func makeBookURL(marketId string, level int) string {
 	return fmt.Sprintf(BOOK_URL, marketId, level)
 }
 
-type Candle struct{}
+type Candles []*Candle
+
+func (c *Candles) UnmarshalJSON(bts []byte) error {
+	var candleArray []json.RawMessage
+	err := json.Unmarshal(bts, &candleArray)
+	if err != nil {
+		return err
+	}
+	var buffer [6]json.RawMessage
+	candles := make([]*Candle, 0, len(candleArray))
+	for _, currCandle := range candleArray {
+		err := json.Unmarshal(currCandle, &buffer)
+		if err != nil {
+			return err
+		}
+		nextCandle := &Candle{}
+		if err := json.Unmarshal(buffer[0], &nextCandle.Ts); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(buffer[1], &nextCandle.Low); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(buffer[2], &nextCandle.High); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(buffer[3], &nextCandle.Open); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(buffer[4], &nextCandle.Close); err != nil {
+			return err
+		}
+		if err := json.Unmarshal(buffer[5], &nextCandle.Volume); err != nil {
+			return err
+		}
+		candles = append(candles, nextCandle)
+	}
+	*c = candles
+	return nil
+}
+
+type Candle struct {
+	Ts     int64   `json:"ts"`
+	Low    float64 `json:"low"`
+	High   float64 `json:"high"`
+	Open   float64 `json:"open"`
+	Close  float64 `json:"close"`
+	Volume float64 `json:"volume"`
+}
 
 const MARKET_CANDLES_URL = "https://api.exchange.coinbase.com/products/%s/candles?granularity=%d"
 
-func (c *Client) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) ([]*Candle, error) {
-	return nil, nil
+func (c *Client) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) (*Candles, error) {
+	return jsonhttp.Get[*Candles](ctx, c.cl, makeCandleURL(marketId, granularity, start, end), nil)
 }
 
 func makeCandleURL(marketId string, granularity, start, end int) string {
 	url := fmt.Sprintf(MARKET_CANDLES_URL, marketId, granularity)
 	if start != 0 && end != 0 {
-		url = url + "&start=" + string(start) + "&end=" + string(end)
+		url = url + "&start=" + strconv.FormatInt(int64(start), 10) + "&end=" + strconv.FormatInt(int64(end), 10)
 	}
 	return url
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"testing"
+	"time"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
 )
@@ -19,16 +20,16 @@ import (
 // 	}
 // }
 
-func TestGetbook12(t *testing.T) {
-	cl := coinbase.NewClient()
-	book, err := cl.GetMarketBookLevel2(context.TODO(), "btc-usd")
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, b := range book.Bids {
-		log.Printf("%+v\n", b)
-	}
-}
+// func TestGetbook12(t *testing.T) {
+// 	cl := coinbase.NewClient()
+// 	book, err := cl.GetMarketBookLevel2(context.TODO(), "btc-usd")
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	for _, b := range book.Bids {
+// 		log.Printf("%+v\n", b)
+// 	}
+// }
 
 // func TestGetbook3(t *testing.T) {
 // 	cl := coinbase.NewClient()
@@ -40,3 +41,14 @@ func TestGetbook12(t *testing.T) {
 // 		log.Printf("%+v\n", b)
 // 	}
 // }
+
+func TestCandles(t *testing.T) {
+	cl := coinbase.NewClient()
+	cns, err := cl.GetMarketCandles(context.TODO(), "btc-usd", 60, int(time.Now().Unix()-600), int(time.Now().Unix()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, cn := range *cns {
+		log.Printf("%+v", cn)
+	}
+}
