@@ -69,8 +69,13 @@ func (c *Client) Subscribe(ctx context.Context, products []string, channels []an
 	return wsConn, nil
 }
 
-func (c *Client) Unsubscribe(ctx context.Context, products []string, channels []any) error {
-	return nil
+func (c *Conn) Unsubscribe(ctx context.Context, products []string, channels []any) error {
+	msg := &SubscribeMsg{
+		Type:       "unsubscribe",
+		ProductIds: products,
+		Channels:   channels,
+	}
+	return c.conn.WriteJSON(msg)
 }
 
 func (c *Conn) Listen() error {
