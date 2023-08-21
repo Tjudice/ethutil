@@ -2,6 +2,7 @@ package coinbase_test
 
 import (
 	"context"
+	"log"
 	"os"
 	"testing"
 	"time"
@@ -53,7 +54,8 @@ func TestSubscribeStatus(t *testing.T) {
 	}
 	go func() {
 		for {
-			<-conn.C()
+			x := <-conn.C()
+			log.Printf("%+v", x)
 		}
 	}()
 	time.Sleep(time.Minute)

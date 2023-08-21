@@ -6,7 +6,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/gorilla/websocket"
 )
 
@@ -115,7 +114,8 @@ func parseMessage(bts []byte) (WebsocketMessage, error) {
 	typedMessage := schem.Clone()
 	err = json.Unmarshal(bts, &typedMessage)
 	if err != nil {
-		log.Println(err.Error())
+		log.Println(msgType.Type)
+		log.Println(string(bts))
 		return nil, err
 	}
 	return typedMessage, nil
@@ -263,22 +263,22 @@ type Details struct {
 	CryptoAddressLink     string   `json:"crypto_address_link"`
 	CryptoTransactionLink string   `json:"crypto_transaction_link"`
 	PushPaymentMethods    []string `json:"push_payment_methods"`
-	MinWithdrawalAmount   float64  `json:"min_withdrawal_amount,string"`
-	MaxWithdrawalAmount   float64  `json:"max_withdrawal_amount,string"`
+	MinWithdrawalAmount   float64  `json:"min_withdrawal_amount"`
+	MaxWithdrawalAmount   float64  `json:"max_withdrawal_amount"`
 }
 
 type Network struct {
-	Id                    string         `json:"id"`
-	Name                  string         `json:"name"`
-	Status                string         `json:"status"`
-	ContractAddress       common.Address `json:"contract_address"`
-	CryptoAddressLink     string         `json:"crypto_address_link"`
-	CryptoTransactionLink string         `json:"crypto_transaction_link"`
-	MinWithdrawalAmount   float64        `json:"min_withdrawal_amount,string"`
-	MaxWithdrawalAmount   float64        `json:"max_withdrawal_amount,string"`
-	Networkconfirmations  int            `json:"network_confirmations"`
-	ProcessingTimeSeconds int            `json:"processing_time_seconds"`
-	NetworkMap            any            `json:"network_map"`
+	Id                    string  `json:"id"`
+	Name                  string  `json:"name"`
+	Status                string  `json:"status"`
+	ContractAddress       string  `json:"contract_address"`
+	CryptoAddressLink     string  `json:"crypto_address_link"`
+	CryptoTransactionLink string  `json:"crypto_transaction_link"`
+	MinWithdrawalAmount   float64 `json:"min_withdrawal_amount"`
+	MaxWithdrawalAmount   float64 `json:"max_withdrawal_amount"`
+	Networkconfirmations  int     `json:"network_confirmations"`
+	ProcessingTimeSeconds int     `json:"processing_time_seconds"`
+	NetworkMap            any     `json:"network_map"`
 }
 
 type Status struct {
