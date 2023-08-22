@@ -2,6 +2,7 @@ package coinbase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/tjudice/util/go/clients/jsonhttp"
@@ -38,4 +39,18 @@ var ADVANCED_TRADE_ACCOUNTS_URL = "https://api.coinbase.com/api/v3/brokerage/acc
 
 func (c *AdvancedTradeClient) GetAccounts(ctx context.Context, limit int, cursor string) (*AccountsWrapper, error) {
 	return jsonhttp.Get[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil)
+}
+
+type AccountWrapper struct {
+	Account *Account `json:"account"`
+}
+
+var ADVANCED_TRADE_ACCOUNT_URL = "https://api.coinbase.com/api/v3/brokerage/accounts/%s"
+
+func (c *AdvancedTradeClient) GetAccount(ctx context.Context, accountUUID string) (*Account, error) {
+	acc, err := jsonhttp.Get[*AccountWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ACCOUNT_URL, accountUUID), nil)
+	if err != nil {
+		return nil, err
+	}
+	return acc.Account, nil
 }

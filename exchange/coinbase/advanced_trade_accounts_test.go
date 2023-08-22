@@ -23,3 +23,17 @@ func TestAdvancedTradeGetAccounts(t *testing.T) {
 	}
 	log.Printf("%+v", accts)
 }
+
+func TestAdvancedTradeGetAccount(t *testing.T) {
+	cl := getAdvancedTradeClient()
+	accts, err := cl.GetAccounts(context.TODO(), 10, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	uuid := accts.Accounts[0].UUID
+	acct, err := cl.GetAccount(context.TODO(), uuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Printf("%+v", acct)
+}
