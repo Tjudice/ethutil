@@ -10,13 +10,13 @@ import (
 	"github.com/tjudice/ethutil/exchange/coinbase"
 )
 
-func getWsClient() *coinbase.Client {
+func getWsClient() *coinbase.ExchangeClient {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
 	acc, err := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
 	if err != nil {
 		panic(err)
 	}
-	return coinbase.NewClient(acc)
+	return coinbase.NewExchangeClient(acc)
 }
 
 func TestSubscribeHeartbeat(t *testing.T) {

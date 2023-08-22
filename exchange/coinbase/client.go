@@ -4,13 +4,13 @@ import (
 	"net/http"
 )
 
-type Client struct {
+type ExchangeClient struct {
 	cl   *http.Client
 	auth Authenticator
 }
 
-func NewClient(auth Authenticator) *Client {
-	return &Client{
+func NewExchangeClient(auth Authenticator) *ExchangeClient {
+	return &ExchangeClient{
 		cl:   http.DefaultClient,
 		auth: auth,
 	}

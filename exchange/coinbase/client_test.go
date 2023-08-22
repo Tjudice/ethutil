@@ -10,10 +10,10 @@ import (
 	"github.com/tjudice/ethutil/exchange/coinbase"
 )
 
-func getClient() *coinbase.Client {
+func getClient() *coinbase.ExchangeClient {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
 	acc, _ := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
-	return coinbase.NewClient(acc)
+	return coinbase.NewExchangeClient(acc)
 }
 
 func TestGetMarkets(t *testing.T) {

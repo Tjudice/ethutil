@@ -38,11 +38,11 @@ type Market struct {
 
 const PRODUCTS_URL = "https://api.exchange.coinbase.com/products/"
 
-func (c *Client) GetMarkets(ctx context.Context) ([]*Market, error) {
+func (c *ExchangeClient) GetMarkets(ctx context.Context) ([]*Market, error) {
 	return jsonhttp.Get[[]*Market](ctx, c.cl, PRODUCTS_URL, nil)
 }
 
-func (c *Client) GetMarket(ctx context.Context, marketId string) (*Market, error) {
+func (c *ExchangeClient) GetMarket(ctx context.Context, marketId string) (*Market, error) {
 	return jsonhttp.Get[*Market](ctx, c.cl, PRODUCTS_URL+marketId, nil)
 }
 
@@ -98,11 +98,11 @@ func (o *OrderMarshalling) UnmarshalJSON(bts []byte) error {
 	return nil
 }
 
-func (c *Client) GetMarketBookLevel1(ctx context.Context, marketId string) (*Orderbook, error) {
+func (c *ExchangeClient) GetMarketBookLevel1(ctx context.Context, marketId string) (*Orderbook, error) {
 	return jsonhttp.Get[*Orderbook](ctx, c.cl, makeBookURL(marketId, 1), nil)
 }
 
-func (c *Client) GetMarketBookLevel2(ctx context.Context, marketId string) (*Orderbook, error) {
+func (c *ExchangeClient) GetMarketBookLevel2(ctx context.Context, marketId string) (*Orderbook, error) {
 	return jsonhttp.Get[*Orderbook](ctx, c.cl, makeBookURL(marketId, 2), nil)
 }
 
@@ -149,7 +149,7 @@ func (o *Order3Marshalling) UnmarshalJSON(bts []byte) error {
 	return nil
 }
 
-func (c *Client) GetMarketBookLevel3(ctx context.Context, marketId string) (*OrderbookLevel3, error) {
+func (c *ExchangeClient) GetMarketBookLevel3(ctx context.Context, marketId string) (*OrderbookLevel3, error) {
 	return jsonhttp.Get[*OrderbookLevel3](ctx, c.cl, makeBookURL(marketId, 3), nil)
 }
 
@@ -208,7 +208,7 @@ type Candle struct {
 
 const MARKET_CANDLES_URL = "https://api.exchange.coinbase.com/products/%s/candles?granularity=%d"
 
-func (c *Client) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) (*Candles, error) {
+func (c *ExchangeClient) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) (*Candles, error) {
 	return jsonhttp.Get[*Candles](ctx, c.cl, makeCandleURL(marketId, granularity, start, end), nil)
 }
 
@@ -231,7 +231,7 @@ type Stats struct {
 
 const MARKET_STATS_URL = "https://api.exchange.coinbase.com/products/%s/stats"
 
-func (c *Client) GetMarketStats(ctx context.Context, marketId string) (*Stats, error) {
+func (c *ExchangeClient) GetMarketStats(ctx context.Context, marketId string) (*Stats, error) {
 	return jsonhttp.Get[*Stats](ctx, c.cl, fmt.Sprintf(MARKET_STATS_URL, marketId), nil)
 }
 
@@ -247,7 +247,7 @@ type Ticker struct {
 
 const MARKET_TICKER_URL = "https://api.exchange.coinbase.com/products/%s/ticker"
 
-func (c *Client) GetMarketTicker(ctx context.Context, marketId string) (*Ticker, error) {
+func (c *ExchangeClient) GetMarketTicker(ctx context.Context, marketId string) (*Ticker, error) {
 	return jsonhttp.Get[*Ticker](ctx, c.cl, fmt.Sprintf(MARKET_TICKER_URL, marketId), nil)
 }
 
@@ -261,6 +261,6 @@ type Trade struct {
 
 const MARKET_TRADES_URL = "https://api.exchange.coinbase.com/products/%s/trades?limit=%d"
 
-func (c *Client) GetMarketTrades(ctx context.Context, marketId string, limit int64) ([]*Trade, error) {
+func (c *ExchangeClient) GetMarketTrades(ctx context.Context, marketId string, limit int64) ([]*Trade, error) {
 	return jsonhttp.Get[[]*Trade](ctx, c.cl, fmt.Sprintf(MARKET_TRADES_URL, marketId, limit), nil)
 }

@@ -39,7 +39,7 @@ type WebsocketMessage interface {
 	Clone() WebsocketMessage
 }
 
-func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
+func (c *ExchangeClient) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
 	conn, _, err := websocket.DefaultDialer.DialContext(ctx, COINBASE_EXCHANGE_WSS_URL_FEED, nil)
 	if err != nil {
 		return nil, err
