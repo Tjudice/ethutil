@@ -64,19 +64,52 @@ func getWsClient() *coinbase.Client {
 // 	time.Sleep(time.Minute)
 // }
 
-func TestSubscribeLevel3(t *testing.T) {
+// func TestSubscribeLevel3(t *testing.T) {
+// 	cl := getWsClient()
+// 	conn, err := cl.Subscribe(context.TODO(), []string{"BTC-USD"}, []any{"level3"})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	processed := 0
+// 	go func() {
+// 		for {
+// 			<-conn.C()
+// 			processed += 1
+// 		}
+// 	}()
+// 	time.Sleep(time.Minute)
+// 	log.Println(processed)
+// }
+
+// func TestSubscribeTickerBatch(t *testing.T) {
+// 	cl := getWsClient()
+// 	conn, err := cl.Subscribe(context.TODO(), []string{"BTC-USD"}, []any{"ticker_batch"})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	go func() {
+// 		for {
+// 			log.Println(<-conn.C())
+// 		}
+// 	}()
+// 	time.Sleep(time.Minute)
+// }
+
+func TestSubscribeRFQMatches(t *testing.T) {
 	cl := getWsClient()
-	conn, err := cl.Subscribe(context.TODO(), []string{"BTC-USD"}, []any{"level3"})
+	conn, err := cl.Subscribe(context.TODO(), nil, []any{
+		struct {
+			Name string `json:"name"`
+		}{
+			Name: "rfq_matches"},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	processed := 0
 	go func() {
 		for {
-			<-conn.C()
-			processed += 1
+			log.Println(<-conn.C())
 		}
 	}()
 	time.Sleep(time.Minute)
-	log.Println(processed)
 }

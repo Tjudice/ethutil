@@ -117,6 +117,7 @@ var messageTypeChoice = map[string]WebsocketMessage{
 	"change":        &Change{},
 	"activate":      &Activate{},
 	"level3":        &Level3{},
+	"rfq_match":     &RFQMatch{},
 }
 
 func parseMessage(bts []byte) (WebsocketMessage, error) {
@@ -404,6 +405,24 @@ func (s *Activate) Seq() int64 {
 
 func (s *Activate) Clone() WebsocketMessage {
 	return new(Activate)
+}
+
+type RFQMatch struct {
+	ProductId    string    `json:"product_id"`
+	MakerOrderId string    `json:"maker_order_id"`
+	TakerOrderId string    `json:"taker_order_id"`
+	Side         string    `json:"side"`
+	Size         float64   `json:"size,string"`
+	Price        float64   `json:"price,string"`
+	Time         time.Time `json:"time"`
+}
+
+func (s *RFQMatch) Seq() int64 {
+	return 0
+}
+
+func (s *RFQMatch) Clone() WebsocketMessage {
+	return new(RFQMatch)
 }
 
 type Snapshot struct{}
