@@ -83,7 +83,7 @@ func SignWebsocket(a *AccountAuth) (*SignedMessage, error) {
 		Key:        a.API_KEY,
 		Timestamp:  strconv.FormatInt(access_timestamp, 10),
 		Passphrase: a.API_PASSPHRASE,
-		Sig:        string(sig64),
+		Sig:        sig64,
 	}
 	return r, nil
 }
