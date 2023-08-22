@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"gfx.cafe/open/ghost/hexutil"
 	"gopkg.in/yaml.v3"
 )
 
@@ -87,6 +88,72 @@ func SignWebsocket(a *AccountAuth) (*SignedMessage, error) {
 	}
 	return r, nil
 }
+
+type AdvancedTradeAuth struct {
+	API_KEY    string `json:"api_key" yaml:"api_key"`
+	API_SECRET string `json:"api_secret" yaml:"api_secret"`
+}
+
+func LoadAdvancedTradeAccount(filepath string) (*AdvancedTradeAuth, error) {
+	bts, err := os.ReadFile(filepath)
+	if err != nil {
+		return nil, err
+	}
+	out := &AdvancedTradeAuth{}
+	err = yaml.Unmarshal(bts, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func SignAdvancedTradeRequest(a *AdvancedTradeAuth, requestPath string, r *http.Request) error {
+	access_timestamp := time.Now().Unix()
+	body, err := encodeBody(r)
+	if err != nil {
+		return err
+	}
+	message := strconv.FormatInt(access_timestamp, 10) + r.Method + requestPath + body
+	secretHmac := hmac.New(sha256.New, []byte(a.API_SECRET))
+	_, err = secretHmac.Write([]byte(message))
+	if err != nil {
+		return err
+	}
+	sig := secretHmac.Sum(make([]byte, 0, secretHmac.Size()))
+	r.Header.Add("CB-ACCESS-KEY", a.API_KEY)
+	r.Header.Add("CB-ACCESS-TIMESTAMP", strconv.FormatInt(access_timestamp, 10))
+	r.Header.Add("CB-ACCESS-SIGN", hexutil.Bytes(sig).String()[2:])
+	return nil
+}
+
+// type SignedAdvancedTradeMessage struct {
+// 	Key       string `json:"key"`
+// 	Timestamp string `json:"timestamp"`
+// 	Sig       string `json:"signature"`
+// }
+
+// func SignAdvancedTradeWebsocket(a *AdvancedTradeAuth) (*SignedAdvancedTradeMessage, error) {
+// 	access_timestamp := time.Now().Unix()
+// 	message := strconv.FormatInt(access_timestamp, 10) + http.MethodGet + "/users/self/verify"
+// 	decoded, err := base64.StdEncoding.DecodeString(a.API_SECRET)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	secretHmac := hmac.New(sha256.New, decoded)
+// 	_, err = secretHmac.Write([]byte(message))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	sig := secretHmac.Sum(make([]byte, 0, secretHmac.Size()))
+// 	sig64 := base64.StdEncoding.EncodeToString(sig)
+// 	r := &SignedMessage{
+// 		Key:        a.API_KEY,
+// 		Timestamp:  strconv.FormatInt(access_timestamp, 10),
+// 		Passphrase: a.API_PASSPHRASE,
+// 		Sig:        sig64,
+// 	}
+// 	return r, nil
+// }
 
 func encodeBody(r *http.Request) (string, error) {
 	if r.Body == nil {
