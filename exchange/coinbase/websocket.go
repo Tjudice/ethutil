@@ -118,6 +118,8 @@ var messageTypeChoice = map[string]WebsocketMessage{
 	"activate":      &Activate{},
 	"level3":        &Level3{},
 	"rfq_match":     &RFQMatch{},
+	"snapshot":      &Snapshot{},
+	"l2update":      &L2Update{},
 }
 
 func parseMessage(bts []byte) (WebsocketMessage, error) {
@@ -425,9 +427,123 @@ func (s *RFQMatch) Clone() WebsocketMessage {
 	return new(RFQMatch)
 }
 
-type Snapshot struct{}
+type Snapshot struct {
+	ProductId string           `json:"product_id"`
+	Asks      []*OrderSnapshot `json:"asks"`
+	Bids      []*OrderSnapshot `json:"bids"`
+	Time      time.Time        `json:"time"`
+}
 
-type L2Update struct{}
+type OrderSnapshot struct {
+	Price float64 `json:"price"`
+	Size  float64 `json:"size"`
+}
+
+func (s *Snapshot) Seq() int64 {
+	return 0
+}
+
+func (s *Snapshot) Clone() WebsocketMessage {
+	return new(Snapshot)
+}
+
+func (s *Snapshot) UnmarshalJSON(bts []byte) error {
+	type tmpSnapshot struct {
+		ProductId string      `json:"product_id"`
+		Asks      [][2]string `json:"asks"`
+		Bids      [][2]string `json:"bids"`
+		Time      time.Time   `json:"time"`
+	}
+	tmp := tmpSnapshot{}
+	err := json.Unmarshal(bts, &tmp)
+	if err != nil {
+		return err
+	}
+	s.ProductId = tmp.ProductId
+	s.Time = tmp.Time
+	s.Asks = make([]*OrderSnapshot, 0, len(tmp.Asks))
+	for _, askStrings := range tmp.Asks {
+		price, err := fastfloat.Parse(askStrings[0][1 : len(askStrings[0])-1])
+		if err != nil {
+			return err
+		}
+		size, err := fastfloat.Parse(askStrings[1][1 : len(askStrings[1])-1])
+		if err != nil {
+			return err
+		}
+		s.Asks = append(s.Asks, &OrderSnapshot{
+			Price: price,
+			Size:  size,
+		})
+	}
+	s.Bids = make([]*OrderSnapshot, 0, len(tmp.Bids))
+	for _, bidStrings := range tmp.Bids {
+		price, err := fastfloat.Parse(bidStrings[0][1 : len(bidStrings[0])-1])
+		if err != nil {
+			return err
+		}
+		size, err := fastfloat.Parse(bidStrings[1][1 : len(bidStrings[1])-1])
+		if err != nil {
+			return err
+		}
+		s.Bids = append(s.Bids, &OrderSnapshot{
+			Price: price,
+			Size:  size,
+		})
+	}
+	return nil
+}
+
+type OrderbookChange struct {
+	Side  string  `json:"side"`
+	Price float64 `json:"price"`
+	Size  float64 `json:"size"`
+}
+
+type L2Update struct {
+	ProductId string             `json:"product_id"`
+	Changes   []*OrderbookChange `json:"changes"`
+	Time      time.Time          `json:"time"`
+}
+
+func (s *L2Update) Seq() int64 {
+	return 0
+}
+
+func (s *L2Update) Clone() WebsocketMessage {
+	return new(L2Update)
+}
+
+func (s *L2Update) UnmarshalJSON(bts []byte) error {
+	type tmpUpdate struct {
+		ProductId string      `json:"product_id"`
+		Changes   [][3]string `json:"changes"`
+		Time      time.Time   `json:"time"`
+	}
+	tmp := tmpUpdate{}
+	err := json.Unmarshal(bts, &tmp)
+	if err != nil {
+		return err
+	}
+	s.ProductId = tmp.ProductId
+	s.Time = tmp.Time
+	s.Changes = make([]*OrderbookChange, 0, len(tmp.Changes))
+	for _, changesStrings := range tmp.Changes {
+		changes := &OrderbookChange{
+			Side: changesStrings[0],
+		}
+		changes.Price, err = fastfloat.Parse(changesStrings[1][1 : len(changesStrings[1])-1])
+		if err != nil {
+			return err
+		}
+		changes.Size, err = fastfloat.Parse(changesStrings[2][1 : len(changesStrings[2])-1])
+		if err != nil {
+			return err
+		}
+		s.Changes = append(s.Changes, changes)
+	}
+	return nil
+}
 
 type Level3Schema struct {
 	Change []string `json:"change"`

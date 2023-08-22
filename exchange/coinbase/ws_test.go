@@ -95,21 +95,38 @@ func getWsClient() *coinbase.Client {
 // 	time.Sleep(time.Minute)
 // }
 
-func TestSubscribeRFQMatches(t *testing.T) {
+// func TestSubscribeRFQMatches(t *testing.T) {
+// 	cl := getWsClient()
+// 	conn, err := cl.Subscribe(context.TODO(), nil, []any{
+// 		struct {
+// 			Name string `json:"name"`
+// 		}{
+// 			Name: "rfq_matches"},
+// 	})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	go func() {
+// 		for {
+// 			log.Println(<-conn.C())
+// 		}
+// 	}()
+// 	time.Sleep(time.Minute)
+// }
+
+func TestSusbcribeLevel2(t *testing.T) {
 	cl := getWsClient()
-	conn, err := cl.Subscribe(context.TODO(), nil, []any{
-		struct {
-			Name string `json:"name"`
-		}{
-			Name: "rfq_matches"},
-	})
+	conn, err := cl.Subscribe(context.TODO(), []string{"BTC-USD"}, []any{"level2"})
 	if err != nil {
 		t.Fatal(err)
 	}
+	cnt := 0
 	go func() {
 		for {
-			log.Println(<-conn.C())
+			<-conn.C()
+			cnt = cnt + 1
 		}
 	}()
 	time.Sleep(time.Minute)
+	log.Println(cnt)
 }
