@@ -11,7 +11,12 @@ type ExchangeClient struct {
 
 func NewExchangeClient(auth Authenticator) *ExchangeClient {
 	return &ExchangeClient{
-		cl:   http.DefaultClient,
+		cl: &http.Client{
+			Transport: &Transport{
+				Auth:         auth,
+				PrefixString: "https://api.exchange.coinbase.com",
+			},
+		},
 		auth: auth,
 	}
 }

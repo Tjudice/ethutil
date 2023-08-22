@@ -22,8 +22,7 @@ type Transport struct {
 	Base         http.RoundTripper
 }
 
-// RoundTrip authorizes and authenticates the request with an
-// access token from Transport's Source.
+// Stolen from OAUATH2
 func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 	reqBodyClosed := false
 	if req.Body != nil {
@@ -33,9 +32,8 @@ func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	req2 := cloneRequest(req) // per RoundTripper contract
-	t.Auth.SignRequest(strings.TrimPrefix(req.URL.Path, t.PrefixString), req2)
-	// req.Body is assumed to be closed by the base RoundTripper.
+	req2 := cloneRequest(req)
+	t.Auth.SignRequest(strings.Split(strings.TrimPrefix(req.URL.Path, t.PrefixString), "?")[0], req2)
 	reqBodyClosed = true
 	return t.base().RoundTrip(req2)
 }
