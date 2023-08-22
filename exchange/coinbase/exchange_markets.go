@@ -36,17 +36,17 @@ type Market struct {
 	HighBidLimitPercentage string  `json:"high_bid_limit_percentage"`
 }
 
-const PRODUCTS_URL = "https://api.exchange.coinbase.com/products/"
+const EXCHANGE_PRODUCTS_URL = "https://api.exchange.coinbase.com/products/"
 
 func (c *ExchangeClient) GetMarkets(ctx context.Context) ([]*Market, error) {
-	return jsonhttp.Get[[]*Market](ctx, c.cl, PRODUCTS_URL, nil)
+	return jsonhttp.Get[[]*Market](ctx, c.cl, EXCHANGE_PRODUCTS_URL, nil)
 }
 
 func (c *ExchangeClient) GetMarket(ctx context.Context, marketId string) (*Market, error) {
-	return jsonhttp.Get[*Market](ctx, c.cl, PRODUCTS_URL+marketId, nil)
+	return jsonhttp.Get[*Market](ctx, c.cl, EXCHANGE_PRODUCTS_URL+marketId, nil)
 }
 
-const BOOK_URL = "https://api.exchange.coinbase.com/products/%s/book?level=%d"
+const EXCHANGE_BOOK_URL = "https://api.exchange.coinbase.com/products/%s/book?level=%d"
 
 type Order struct {
 	Amount    float64 `json:"amount"`
@@ -154,7 +154,7 @@ func (c *ExchangeClient) GetMarketBookLevel3(ctx context.Context, marketId strin
 }
 
 func makeBookURL(marketId string, level int) string {
-	return fmt.Sprintf(BOOK_URL, marketId, level)
+	return fmt.Sprintf(EXCHANGE_BOOK_URL, marketId, level)
 }
 
 type Candles []*Candle
@@ -206,14 +206,14 @@ type Candle struct {
 	Volume float64 `json:"volume"`
 }
 
-const MARKET_CANDLES_URL = "https://api.exchange.coinbase.com/products/%s/candles?granularity=%d"
+const EXCHANGE_MARKET_CANDLES_URL = "https://api.exchange.coinbase.com/products/%s/candles?granularity=%d"
 
 func (c *ExchangeClient) GetMarketCandles(ctx context.Context, marketId string, granularity, start, end int) (*Candles, error) {
 	return jsonhttp.Get[*Candles](ctx, c.cl, makeCandleURL(marketId, granularity, start, end), nil)
 }
 
 func makeCandleURL(marketId string, granularity, start, end int) string {
-	url := fmt.Sprintf(MARKET_CANDLES_URL, marketId, granularity)
+	url := fmt.Sprintf(EXCHANGE_MARKET_CANDLES_URL, marketId, granularity)
 	if start != 0 && end != 0 {
 		url = url + "&start=" + strconv.FormatInt(int64(start), 10) + "&end=" + strconv.FormatInt(int64(end), 10)
 	}
@@ -229,10 +229,10 @@ type Stats struct {
 	Volume30D float64 `json:"volume_30day,string"`
 }
 
-const MARKET_STATS_URL = "https://api.exchange.coinbase.com/products/%s/stats"
+const EXCHANGE_MARKET_STATS_URL = "https://api.exchange.coinbase.com/products/%s/stats"
 
 func (c *ExchangeClient) GetMarketStats(ctx context.Context, marketId string) (*Stats, error) {
-	return jsonhttp.Get[*Stats](ctx, c.cl, fmt.Sprintf(MARKET_STATS_URL, marketId), nil)
+	return jsonhttp.Get[*Stats](ctx, c.cl, fmt.Sprintf(EXCHANGE_MARKET_STATS_URL, marketId), nil)
 }
 
 type Ticker struct {
@@ -245,10 +245,10 @@ type Ticker struct {
 	Time    time.Time `json:"time"`
 }
 
-const MARKET_TICKER_URL = "https://api.exchange.coinbase.com/products/%s/ticker"
+const EXCHANGE_MARKET_TICKER_URL = "https://api.exchange.coinbase.com/products/%s/ticker"
 
 func (c *ExchangeClient) GetMarketTicker(ctx context.Context, marketId string) (*Ticker, error) {
-	return jsonhttp.Get[*Ticker](ctx, c.cl, fmt.Sprintf(MARKET_TICKER_URL, marketId), nil)
+	return jsonhttp.Get[*Ticker](ctx, c.cl, fmt.Sprintf(EXCHANGE_MARKET_TICKER_URL, marketId), nil)
 }
 
 type Trade struct {
@@ -259,8 +259,8 @@ type Trade struct {
 	Time    time.Time `json:"time"`
 }
 
-const MARKET_TRADES_URL = "https://api.exchange.coinbase.com/products/%s/trades?limit=%d"
+const EXCHANGE_MARKET_TRADES_URL = "https://api.exchange.coinbase.com/products/%s/trades?limit=%d"
 
 func (c *ExchangeClient) GetMarketTrades(ctx context.Context, marketId string, limit int64) ([]*Trade, error) {
-	return jsonhttp.Get[[]*Trade](ctx, c.cl, fmt.Sprintf(MARKET_TRADES_URL, marketId, limit), nil)
+	return jsonhttp.Get[[]*Trade](ctx, c.cl, fmt.Sprintf(EXCHANGE_MARKET_TRADES_URL, marketId, limit), nil)
 }
