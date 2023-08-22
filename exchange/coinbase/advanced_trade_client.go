@@ -4,10 +4,10 @@ import "net/http"
 
 type AdvancedTradeClient struct {
 	cl   *http.Client
-	auth *AdvancedTradeAuth
+	auth Authenticator
 }
 
-func NewAdvancedTradeClient(auth *AdvancedTradeAuth) *AdvancedTradeClient {
+func NewAdvancedTradeClient(auth Authenticator) *AdvancedTradeClient {
 	return &AdvancedTradeClient{
 		cl:   http.DefaultClient,
 		auth: auth,

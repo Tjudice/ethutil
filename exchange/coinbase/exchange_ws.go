@@ -15,7 +15,7 @@ import (
 type Conn struct {
 	ch   chan WebsocketMessage
 	conn *websocket.Conn
-	auth *AccountAuth
+	auth Authenticator
 }
 
 const (
@@ -49,7 +49,7 @@ func (c *Client) Subscribe(ctx context.Context, products []string, channels []an
 		ProductIds: products,
 		Channels:   channels,
 	}
-	signed, err := SignWebsocket(c.auth)
+	signed, err := c.auth.SignWebsocketRequest(nil, nil)
 	if err != nil {
 		return nil, err
 	}

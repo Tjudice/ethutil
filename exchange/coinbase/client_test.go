@@ -12,7 +12,7 @@ import (
 
 func getClient() *coinbase.Client {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, _ := coinbase.LoadAccount(acctEnv)
+	acc, _ := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
 	return coinbase.NewClient(acc)
 }
 

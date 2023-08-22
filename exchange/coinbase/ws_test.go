@@ -12,7 +12,7 @@ import (
 
 func getWsClient() *coinbase.Client {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, err := coinbase.LoadAccount(acctEnv)
+	acc, err := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
 	if err != nil {
 		panic(err)
 	}
