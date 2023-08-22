@@ -64,6 +64,51 @@ type OrderParams struct {
 	ContractExpiryType   ContractExpiryType
 }
 
-func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams) ([]*Order, error) {
-	return nil, nil
+type Orders struct{}
+
+type AdvancedTradeOrder struct{}
+
+const ADVANCED_TRADE_ORDERS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/batch"
+
+func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams) (*Orders, error) {
+	panic("not implemented")
+}
+
+const ADVANCED_TRADE_ORDER_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/%s"
+
+func (c *AdvancedTradeClient) GetOrder(ctx context.Context, orderId string) (*AdvancedTradeOrder, error) {
+	panic("not implemented")
+}
+
+type FillParams struct {
+	OrderId                string
+	ProductId              string
+	StartSequenceTimestamp time.Time
+	EndSequenceTimestamp   time.Time
+	Limit                  int
+	Cursor                 string
+}
+
+type Fills struct{}
+
+const ADVANCED_TRADE_FILLS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/fills"
+
+func (c *AdvancedTradeClient) GetFills(ctx context.Context, params *FillParams) (*Fills, error) {
+	panic("not implemented")
+}
+
+type TransactionsSummaryParams struct {
+	StartDate          time.Time
+	EndDate            time.Time
+	UserNativeCurrency string
+	ProductType        ProductType
+	ContractExpiryType ContractExpiryType
+}
+
+type TransactionsSummary struct{}
+
+const ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL = "https://api.coinbase.com/api/v3/brokerage/transaction_summary"
+
+func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (*TransactionsSummary, error) {
+	panic("not implemented")
 }
