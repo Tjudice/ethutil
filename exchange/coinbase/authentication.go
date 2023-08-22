@@ -16,6 +16,47 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Transport struct {
+	Auth         Authenticator
+	PrefixString string
+	Base         http.RoundTripper
+}
+
+// RoundTrip authorizes and authenticates the request with an
+// access token from Transport's Source.
+func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	reqBodyClosed := false
+	if req.Body != nil {
+		defer func() {
+			if !reqBodyClosed {
+				req.Body.Close()
+			}
+		}()
+	}
+	req2 := cloneRequest(req) // per RoundTripper contract
+	t.Auth.SignRequest(strings.TrimPrefix(req.URL.Path, t.PrefixString), req2)
+	// req.Body is assumed to be closed by the base RoundTripper.
+	reqBodyClosed = true
+	return t.base().RoundTrip(req2)
+}
+
+func (t *Transport) base() http.RoundTripper {
+	if t.Base != nil {
+		return t.Base
+	}
+	return http.DefaultTransport
+}
+
+func cloneRequest(r *http.Request) *http.Request {
+	r2 := new(http.Request)
+	*r2 = *r
+	r2.Header = make(http.Header, len(r.Header))
+	for k, s := range r.Header {
+		r2.Header[k] = append([]string(nil), s...)
+	}
+	return r2
+}
+
 type AuthenticationType int
 
 var (

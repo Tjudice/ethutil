@@ -7,9 +7,16 @@ type AdvancedTradeClient struct {
 	auth Authenticator
 }
 
+const ADVANCED_TRADE_PATH_PREFIX = "https://api.coinbase.com"
+
 func NewAdvancedTradeClient(auth Authenticator) *AdvancedTradeClient {
 	return &AdvancedTradeClient{
-		cl:   http.DefaultClient,
+		cl: &http.Client{
+			Transport: &Transport{
+				Auth:         auth,
+				PrefixString: ADVANCED_TRADE_PATH_PREFIX,
+			},
+		},
 		auth: auth,
 	}
 }
