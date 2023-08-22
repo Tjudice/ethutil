@@ -19,6 +19,21 @@ func getWsClient() *coinbase.Client {
 	return coinbase.NewClient(acc)
 }
 
+func TestSubscribeHeartbeat(t *testing.T) {
+	cl := getWsClient()
+	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"heartbeat"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Println(x)
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
+
 func TestSubscribeFull(t *testing.T) {
 	cl := getWsClient()
 	conn, err := cl.Subscribe(context.TODO(), []string{"MXC-USD"}, []any{"full"})

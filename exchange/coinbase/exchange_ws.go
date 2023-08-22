@@ -108,6 +108,7 @@ type MessageType struct {
 
 var messageTypeChoice = map[string]WebsocketMessage{
 	"subscriptions": &Subscriptions{},
+	"heartbeat":     &Heartbeat{},
 	"done":          &Done{},
 	"received":      &Received{},
 	"open":          &Open{},
@@ -208,6 +209,21 @@ func (s *Subscriptions) Seq() int64 {
 
 func (s *Subscriptions) Clone() WebsocketMessage {
 	return new(Subscriptions)
+}
+
+type Heartbeat struct {
+	Sequence    int64     `json:"sequence"`
+	LastTradeId int64     `json:"last_trade_id"`
+	ProductId   string    `json:"product_id"`
+	Time        time.Time `json:"time"`
+}
+
+func (s *Heartbeat) Seq() int64 {
+	return s.Sequence
+}
+
+func (s *Heartbeat) Clone() WebsocketMessage {
+	return new(Heartbeat)
 }
 
 type Done struct {
