@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tjudice/util/go/clients/jsonhttp"
+	"github.com/tjudice/util/go/network/http_helpers"
 )
 
 type BestBidAsks struct {
@@ -31,7 +31,7 @@ func (c *AdvancedTradeClient) GetBestBidAsk(ctx context.Context, productIds []st
 	if len(productIds) == 0 {
 		return nil, fmt.Errorf("GetBestBidAsk: must provide at least 1 product id")
 	}
-	return jsonhttp.Get[*BestBidAsks](ctx, c.cl, ADVANCED_TRADE_BEST_BID_ASK_URL+"?product_ids="+strings.Join(productIds, "&product_ids="), nil)
+	return http_helpers.GetJSON[*BestBidAsks](ctx, c.cl, ADVANCED_TRADE_BEST_BID_ASK_URL+"?product_ids="+strings.Join(productIds, "&product_ids="), nil)
 }
 
 type AdvancedTradeOrderbook struct{}
