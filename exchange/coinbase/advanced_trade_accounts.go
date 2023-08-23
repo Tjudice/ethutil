@@ -3,6 +3,7 @@ package coinbase
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/tjudice/util/go/network/http_helpers"
@@ -38,7 +39,11 @@ type Balance struct {
 var ADVANCED_TRADE_ACCOUNTS_URL = "https://api.coinbase.com/api/v3/brokerage/accounts"
 
 func (c *AdvancedTradeClient) GetAccounts(ctx context.Context, limit int, cursor string) (*AccountsWrapper, error) {
-	return http_helpers.GetJSON[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil)
+	return http_helpers.GetJSONFn[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil, func(r *http.Request) {
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			AddIfNotDefault("limit", limit, 0).
+			AddIfNotDefault("cursor", cursor, "").Encode()
+	})
 }
 
 type AccountWrapper struct {
