@@ -38,7 +38,8 @@ type AdvancedTradeOrderbook struct{}
 
 const ADVANCED_TRADE_ORDERBOOK_URL = "https://api.coinbase.com/api/v3/brokerage/product_book"
 
-func (c *AdvancedTradeClient) GetOrderbook(ctx context.Context, limit int) (*AdvancedTradeOrderbook, error) {
+func (c *AdvancedTradeClient) GetOrderbook(ctx context.Context, productId string, limit int) (*AdvancedTradeOrderbook, error) {
+
 	panic("not implemented")
 }
 
