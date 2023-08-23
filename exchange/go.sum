@@ -5,10 +5,6 @@ github.com/gorilla/websocket v1.5.0 h1:PPwGk2jz7EePpoHN/+ClbZu8SPxiqlu12wZP/3sWm
 github.com/gorilla/websocket v1.5.0/go.mod h1:YR8l580nyteQvAITg2hZ9XVh4b55+EU/adAjf1fMHhE=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
-github.com/tjudice/util/go/clients v0.0.0-20230820223025-929ce03cfe08 h1:g7wRry7H6+cyV7jxaES48vCFGWC36QjRCEVqxgATSRs=
-github.com/tjudice/util/go/clients v0.0.0-20230820223025-929ce03cfe08/go.mod h1:5sg0YAGKJyq4yQd/W+vs1PzgCVKfmFIJxwIehb6YHg4=
-github.com/tjudice/util/go/network v0.0.0-20230823034452-ef675d4a7c6a h1:bQCKCaeQu5P2C0zasr14pdAg6UKxy+XPY+dGfIDJGSg=
-github.com/tjudice/util/go/network v0.0.0-20230823034452-ef675d4a7c6a/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
 github.com/tjudice/util/go/network v0.0.0-20230823040906-30d72aa7faa1 h1:+RVnoYrrd8k539htwyZZwlsXCjtCIdRhgOstwYSZ4gY=
 github.com/tjudice/util/go/network v0.0.0-20230823040906-30d72aa7faa1/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
 github.com/valyala/fastjson v1.6.4 h1:uAUNq9Z6ymTgGhcm0UynUAB6tlbakBrz6CQFax3BXVQ=
