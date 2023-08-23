@@ -127,7 +127,7 @@ func (c *AdvancedTradeClient) GetMarkets(ctx context.Context, params *GetMarketP
 const ADVANCED_TRADE_GET_MARKET_URL = "https://api.coinbase.com/api/v3/brokerage/products/%s"
 
 func (c *AdvancedTradeClient) GetMarket(ctx context.Context, marketId string) (*AdvancedTradeMarket, error) {
-	panic("not implemented")
+	return http_helpers.GetJSON[*AdvancedTradeMarket](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_GET_MARKET_URL, marketId), nil)
 }
 
 type AdvancedTradeCandle struct{}

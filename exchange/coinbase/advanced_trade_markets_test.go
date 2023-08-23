@@ -33,14 +33,23 @@ func getAdvancedTradeClient2() *coinbase.AdvancedTradeClient {
 // 	log.Println(res)
 // }
 
-func TestGetMarketsAdvanced(t *testing.T) {
+// func TestGetMarketsAdvanced(t *testing.T) {
+// 	cl := getAdvancedTradeClient2()
+// 	res, err := cl.GetMarkets(context.TODO(), &coinbase.GetMarketParams{
+// 		Limit:  100,
+// 		Offset: 50,
+// 	})
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	log.Println(string(res))
+// }
+
+func TestGetMarketAdvanced(t *testing.T) {
 	cl := getAdvancedTradeClient2()
-	res, err := cl.GetMarkets(context.TODO(), &coinbase.GetMarketParams{
-		Limit:  100,
-		Offset: 50,
-	})
+	res, err := cl.GetMarket(context.TODO(), "BTC-USD")
 	if err != nil {
 		t.Fatal(err)
 	}
-	log.Println(string(res))
+	log.Println(res)
 }
