@@ -1,6 +1,8 @@
 package coinbase
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 func unmarshalFloatString(bts []byte, f *float64) error {
 	if len(bts) <= 2 {

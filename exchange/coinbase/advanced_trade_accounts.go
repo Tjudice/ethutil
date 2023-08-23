@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tjudice/util/go/clients/jsonhttp"
+	"github.com/tjudice/util/go/network/http_helpers"
 )
 
 type AccountsWrapper struct {
@@ -38,7 +38,7 @@ type Balance struct {
 var ADVANCED_TRADE_ACCOUNTS_URL = "https://api.coinbase.com/api/v3/brokerage/accounts"
 
 func (c *AdvancedTradeClient) GetAccounts(ctx context.Context, limit int, cursor string) (*AccountsWrapper, error) {
-	return jsonhttp.Get[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil)
+	return http_helpers.GetJSON[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil)
 }
 
 type AccountWrapper struct {
@@ -48,7 +48,7 @@ type AccountWrapper struct {
 var ADVANCED_TRADE_ACCOUNT_URL = "https://api.coinbase.com/api/v3/brokerage/accounts/%s"
 
 func (c *AdvancedTradeClient) GetAccount(ctx context.Context, accountUUID string) (*Account, error) {
-	acc, err := jsonhttp.Get[*AccountWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ACCOUNT_URL, accountUUID), nil)
+	acc, err := http_helpers.GetJSON[*AccountWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ACCOUNT_URL, accountUUID), nil)
 	if err != nil {
 		return nil, err
 	}
