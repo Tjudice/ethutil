@@ -15,13 +15,27 @@ func getAdvancedTradeClient() *coinbase.AdvancedTradeClient {
 	return coinbase.NewAdvancedTradeClient(acc)
 }
 
-func TestAdvancedTradeGetAccounts(t *testing.T) {
+func TestGetAccounts(t *testing.T) {
 	cl := getAdvancedTradeClient()
 	accts, err := cl.GetAccounts(context.TODO(), 10, "")
 	if err != nil {
 		t.Fatal(err)
 	}
 	log.Printf("%+v", accts)
+	log.Println(len(accts.Accounts))
+}
+
+func TestGetAccountsCursor(t *testing.T) {
+	cl := getAdvancedTradeClient()
+	accts, err := cl.GetAccounts(context.TODO(), 10, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	accts2, err := cl.GetAccounts(context.TODO(), 10, accts.Cursor)
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Println(accts.Accounts[0], accts2.Accounts[0])
 }
 
 func TestAdvancedTradeGetAccount(t *testing.T) {

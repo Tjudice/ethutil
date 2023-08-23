@@ -3,9 +3,10 @@ package coinbase
 import (
 	"context"
 	"fmt"
-	"strings"
+	"net/http"
 	"time"
 
+	"github.com/tjudice/util/go/lambda"
 	"github.com/tjudice/util/go/network/http_helpers"
 )
 
@@ -31,7 +32,9 @@ func (c *AdvancedTradeClient) GetBestBidAsk(ctx context.Context, productIds []st
 	if len(productIds) == 0 {
 		return nil, fmt.Errorf("GetBestBidAsk: must provide at least 1 product id")
 	}
-	return http_helpers.GetJSON[*BestBidAsks](ctx, c.cl, ADVANCED_TRADE_BEST_BID_ASK_URL+"?product_ids="+strings.Join(productIds, "&product_ids="), nil)
+	return http_helpers.GetJSONFn[*BestBidAsks](ctx, c.cl, ADVANCED_TRADE_BEST_BID_ASK_URL, nil, func(r *http.Request) {
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).Add("product_ids", lambda.SliceToAny(productIds)...).Encode()
+	})
 }
 
 type AdvancedTradeOrderbook struct{}
