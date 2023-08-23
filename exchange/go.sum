@@ -7,6 +7,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/tjudice/util/go/network v0.0.0-20230823040906-30d72aa7faa1 h1:+RVnoYrrd8k539htwyZZwlsXCjtCIdRhgOstwYSZ4gY=
 github.com/tjudice/util/go/network v0.0.0-20230823040906-30d72aa7faa1/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
+github.com/tjudice/util/go/network v0.0.0-20230823044444-35b86d9f4f81 h1:694YXxPRddYSyR78JntrDjYOyg+rKocuBAe9VnoGk5I=
+github.com/tjudice/util/go/network v0.0.0-20230823044444-35b86d9f4f81/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
 github.com/valyala/fastjson v1.6.4 h1:uAUNq9Z6ymTgGhcm0UynUAB6tlbakBrz6CQFax3BXVQ=
 github.com/valyala/fastjson v1.6.4/go.mod h1:CLCAqky6SMuOcxStkYQvblddUtoRxhYMGLrsQns1aXY=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=

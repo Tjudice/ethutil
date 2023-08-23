@@ -9,6 +9,6 @@ require (
 
 require (
 	gfx.cafe/open/ghost v0.2.14
-	github.com/tjudice/util/go/network v0.0.0-20230823040906-30d72aa7faa1
+	github.com/tjudice/util/go/network v0.0.0-20230823044444-35b86d9f4f81
 	github.com/valyala/fastjson v1.6.4
 )
