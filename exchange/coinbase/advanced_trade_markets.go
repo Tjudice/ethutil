@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/tjudice/util/go/lambda"
@@ -162,16 +161,16 @@ func unwrapMarket(wrapped *advancedTradeMarketWrapper) *AdvancedTradeMarket {
 	unwrapped := &AdvancedTradeMarket{
 		ProductId:                 wrapped.ProductId,
 		BaseName:                  wrapped.BaseName,
-		Price:                     fastfloat.ParseBestEffort(strings.Trim(wrapped.Price, `"`)),
-		PricePercentageChange24H:  fastfloat.ParseBestEffort(strings.Trim(wrapped.PricePercentageChange24H, `"`)),
-		Volume24H:                 fastfloat.ParseBestEffort(strings.Trim(wrapped.Volume24H, `"`)),
-		VolumePercentageChange24H: fastfloat.ParseBestEffort(strings.Trim(wrapped.VolumePercentageChange24H, `"`)),
-		BaseIncrement:             fastfloat.ParseBestEffort(strings.Trim(wrapped.BaseIncrement, `"`)),
-		QuoteIncrement:            fastfloat.ParseBestEffort(strings.Trim(wrapped.QuoteIncrement, `"`)),
-		QuoteMinSize:              fastfloat.ParseBestEffort(strings.Trim(wrapped.QuoteMinSize, `"`)),
-		QuoteMaxSize:              fastfloat.ParseBestEffort(strings.Trim(wrapped.QuoteMaxSize, `"`)),
-		BaseMinSize:               fastfloat.ParseBestEffort(strings.Trim(wrapped.BaseMinSize, `"`)),
-		BaseMaxSize:               fastfloat.ParseBestEffort(strings.Trim(wrapped.BaseMaxSize, `"`)),
+		Price:                     fastfloat.ParseBestEffort(wrapped.Price),
+		PricePercentageChange24H:  fastfloat.ParseBestEffort(wrapped.PricePercentageChange24H),
+		Volume24H:                 fastfloat.ParseBestEffort(wrapped.Volume24H),
+		VolumePercentageChange24H: fastfloat.ParseBestEffort(wrapped.VolumePercentageChange24H),
+		BaseIncrement:             fastfloat.ParseBestEffort(wrapped.BaseIncrement),
+		QuoteIncrement:            fastfloat.ParseBestEffort(wrapped.QuoteIncrement),
+		QuoteMinSize:              fastfloat.ParseBestEffort(wrapped.QuoteMinSize),
+		QuoteMaxSize:              fastfloat.ParseBestEffort(wrapped.QuoteMaxSize),
+		BaseMinSize:               fastfloat.ParseBestEffort(wrapped.BaseMinSize),
+		BaseMaxSize:               fastfloat.ParseBestEffort(wrapped.BaseMaxSize),
 		QuoteName:                 wrapped.QuoteName,
 		Watched:                   wrapped.Watched,
 		IsDisabled:                wrapped.IsDisabled,
@@ -193,7 +192,6 @@ func unwrapMarket(wrapped *advancedTradeMarketWrapper) *AdvancedTradeMarket {
 		ViewOnly:                  wrapped.ViewOnly,
 		PriceIncrement:            fastfloat.ParseBestEffort(wrapped.PriceIncrement),
 	}
-	unwrapped.Price = fastfloat.ParseBestEffort(wrapped.Price)
 	return unwrapped
 }
 

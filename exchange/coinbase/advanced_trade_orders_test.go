@@ -18,10 +18,12 @@ func getAdvancedTradeClient3() *coinbase.AdvancedTradeClient {
 func TestGetOrders(t *testing.T) {
 	cl := getAdvancedTradeClient3()
 	res, err := cl.GetOrders(context.TODO(), &coinbase.OrderParams{
-		Limit: 1,
+		Limit: 1000,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	log.Println(string(res))
+	for _, o := range res.Orders {
+		log.Printf("%+v", o.OrderConfiguration)
+	}
 }
