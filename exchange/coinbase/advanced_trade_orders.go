@@ -3,6 +3,7 @@ package coinbase
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -287,13 +288,19 @@ func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams
 	})
 }
 
+type singleOrderWrapper struct {
+	Order *AdvancedTradeOrder `json:"order"`
+}
+
 const ADVANCED_TRADE_ORDER_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/%s"
 
-// func (c *AdvancedTradeClient) GetOrder(ctx context.Context, orderId string) (*AdvancedTradeOrder, error) {
-// 	return http_helpers.GetJSONFn[json.RawMessage](ctx, c.cl, ADVANCED_TRADE_ORDERS_URL, nil, func(r *http.Request) {
-// 		encodeOrderParams(r, params)
-// 	})
-// }
+func (c *AdvancedTradeClient) GetOrder(ctx context.Context, orderId string) (*AdvancedTradeOrder, error) {
+	wrapped, err := http_helpers.GetJSON[*singleOrderWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ORDER_URL, orderId), nil)
+	if err != nil {
+		return nil, err
+	}
+	return wrapped.Order, nil
+}
 
 type FillParams struct {
 	OrderId                string
