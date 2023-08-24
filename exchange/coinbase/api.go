@@ -27,6 +27,6 @@ type UserAPI interface {
 type TradeAPI interface{}
 
 type WebsocketAPI interface {
-	Subscribe(ctx context.Context, products []string, channel []any) (*Conn, error)
+	Subscribe(ctx context.Context, products []string, channel []any) (*ExchangeWebsocket, error)
 	Unsubscribe(ctx context.Context, products []string, channel []any) error
 }
