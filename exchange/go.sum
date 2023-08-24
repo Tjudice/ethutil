@@ -11,6 +11,8 @@ github.com/tjudice/util/go/lambda v0.0.0-20230823051404-835cef603913 h1:vDDaf8Ow
 github.com/tjudice/util/go/lambda v0.0.0-20230823051404-835cef603913/go.mod h1:7HoxJLpBGmyN9GhtKHdUp8g55ZPxyYP5oK4/qAu6x4g=
 github.com/tjudice/util/go/network v0.0.0-20230823045642-2fa126615b00 h1:mlIZAOuh8Sd9HikxegL9a8dGKudGgyDC42235tHuAqY=
 github.com/tjudice/util/go/network v0.0.0-20230823045642-2fa126615b00/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
+github.com/tjudice/util/go/network v0.0.0-20230824045309-843b8706acb8 h1:dFxhTarHKSApuUZ47/3mpxnS5fqj/QMWWuXYb7dbBAs=
+github.com/tjudice/util/go/network v0.0.0-20230824045309-843b8706acb8/go.mod h1:PrNhOlwY7S6UHwCPuXvZ9kEklqMveZbOeIRV3/LbvpA=
 github.com/valyala/fastjson v1.6.4 h1:uAUNq9Z6ymTgGhcm0UynUAB6tlbakBrz6CQFax3BXVQ=
 github.com/valyala/fastjson v1.6.4/go.mod h1:CLCAqky6SMuOcxStkYQvblddUtoRxhYMGLrsQns1aXY=
 golang.org/x/exp v0.0.0-20230807204917-050eac23e9de h1:l5Za6utMv/HsBWWqzt4S8X17j+kt1uVETUX5UFhn2rE=

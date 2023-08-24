@@ -2,7 +2,11 @@ package coinbase
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 	"time"
+
+	"github.com/tjudice/util/go/network/http_helpers"
 )
 
 type OrderStatus string
@@ -70,8 +74,25 @@ type AdvancedTradeOrder struct{}
 
 const ADVANCED_TRADE_ORDERS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/batch"
 
-func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams) (*Orders, error) {
-	panic("not implemented")
+func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams) (json.RawMessage, error) {
+	return http_helpers.GetJSONFn[json.RawMessage](ctx, c.cl, ADVANCED_TRADE_ORDERS_URL, nil, func(r *http.Request) {
+		if params == nil {
+			return
+		}
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).Add("product_id", params.ProductId).
+			AddCond("order_status", params.OrderStatus, len(params.OrderStatus) != 0).
+			AddCond("limit", params.Limit, params.Limit != 0).
+			AddCond("start_date", params.StartDate, params.StartDate != time.Time{}).
+			AddCond("end_date", params.EndDate, params.EndDate != time.Time{}).
+			AddCond("user_native_currency", params.UserNativeCurrency, params.UserNativeCurrency != "").
+			AddCond("order_type", params.OrderType, params.OrderType != "").
+			AddCond("order_side", params.OrderSide, params.OrderSide != "").
+			AddCond("cursor", params.Cursor, params.Cursor != "").
+			AddCond("product_type", params.ProductType, params.ProductType != "").
+			AddCond("order_placement_source", params.OrderPlacementSource, params.OrderPlacementSource != "").
+			AddCond("contract_expiry_type", params.ContractExpiryType, params.ContractExpiryType != "").
+			Encode()
+	})
 }
 
 const ADVANCED_TRADE_ORDER_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/%s"

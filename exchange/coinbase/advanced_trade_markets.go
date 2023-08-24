@@ -55,7 +55,10 @@ const ADVANCED_TRADE_ORDERBOOK_URL = "https://api.coinbase.com/api/v3/brokerage/
 
 func (c *AdvancedTradeClient) GetOrderbook(ctx context.Context, productId string, limit int) (*AdvancedTradeOrderbook, error) {
 	wrapper, err := http_helpers.GetJSONFn[*OrderbookWrapperAdvancedTrade](ctx, c.cl, ADVANCED_TRADE_ORDERBOOK_URL, nil, func(r *http.Request) {
-		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).Add("product_id", productId).AddIfNotDefault("limit", limit, 0).Encode()
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			Add("product_id", productId).
+			Add("limit", limit, limit != 0).
+			Encode()
 	})
 	if err != nil {
 		return nil, err
@@ -206,11 +209,12 @@ func (c *AdvancedTradeClient) GetMarkets(ctx context.Context, params *GetMarketP
 			return
 		}
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
-			AddIfNotDefault("limit", params.Limit, 0).
-			AddIfNotDefault("offset", params.Offset, 0).
-			AddIfNotDefault("product_type", string(params.ProductType), "").
+			AddCond("limit", params.Limit, params.Limit != 0).
+			AddCond("offset", params.Offset, params.Offset != 0).
+			AddCond("product_type", string(params.ProductType), params.ProductType != "").
 			Add("product_ids", lambda.SliceToAny(params.ProductIds)...).
-			AddIfNotDefault("contract_expiry_type", string(params.ContractExpiryType), "").Encode()
+			AddCond("contract_expiry_type", string(params.ContractExpiryType), params.ContractExpiryType != "").
+			Encode()
 	})
 }
 
@@ -250,8 +254,10 @@ var (
 
 func (c *AdvancedTradeClient) GetCandles(ctx context.Context, marketId string, granularity CandleGranularity, start, end int64) (*AdvancedTradeCandles, error) {
 	return http_helpers.GetJSONFn[*AdvancedTradeCandles](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_CANDLES_URL, marketId), nil, func(r *http.Request) {
-		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).Add("granularity", granularity).
-			AddIfNotDefault("start", start, 0).AddIfNotDefault("end", end, 0).Encode()
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			Add("granularity", granularity).
+			AddCond("start", start, start != 0 && end != 0).
+			AddCond("end", end, start != 0 && end != 0).Encode()
 	})
 }
 
@@ -274,6 +280,8 @@ const ADVANCED_TRADE_MARKET_TRADES_URL = "https://api.coinbase.com/api/v3/broker
 
 func (c *AdvancedTradeClient) GetMarketTrades(ctx context.Context, marketId string, limit int) (*AdvancedTradeMarketTrades, error) {
 	return http_helpers.GetJSONFn[*AdvancedTradeMarketTrades](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_MARKET_TRADES_URL, marketId), nil, func(r *http.Request) {
-		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).AddIfNotDefault("limit", limit, 0).Encode()
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			AddCond("limit", limit, limit != 0).
+			Encode()
 	})
 }

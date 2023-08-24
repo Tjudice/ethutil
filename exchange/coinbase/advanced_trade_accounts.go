@@ -41,8 +41,8 @@ var ADVANCED_TRADE_ACCOUNTS_URL = "https://api.coinbase.com/api/v3/brokerage/acc
 func (c *AdvancedTradeClient) GetAccounts(ctx context.Context, limit int, cursor string) (*AccountsWrapper, error) {
 	return http_helpers.GetJSONFn[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil, func(r *http.Request) {
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
-			AddIfNotDefault("limit", limit, 0).
-			AddIfNotDefault("cursor", cursor, "").Encode()
+			AddCond("limit", limit, limit != 0).
+			AddCond("cursor", cursor, cursor != "").Encode()
 	})
 }
 
