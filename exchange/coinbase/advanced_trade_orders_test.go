@@ -45,3 +45,26 @@ func TestGetOrder(t *testing.T) {
 	}
 	log.Printf("%+v", singleOrder)
 }
+
+func TestGetFills(t *testing.T) {
+	cl := getAdvancedTradeClient3()
+	res, err := cl.GetFills(context.TODO(), &coinbase.FillParams{
+		Limit: 1,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Fills) == 0 {
+		t.Fatalf("user has no fills")
+	}
+	log.Println(res.Fills[0])
+}
+
+func TestGetTransactionsSummary(t *testing.T) {
+	cl := getAdvancedTradeClient3()
+	res, err := cl.GetTransactionsSummary(context.TODO(), &coinbase.TransactionsSummaryParams{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_ = res
+}

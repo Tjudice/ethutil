@@ -311,12 +311,45 @@ type FillParams struct {
 	Cursor                 string
 }
 
-type Fills struct{}
+type Fills struct {
+	Fills  []*Fill `json:"fills"`
+	Cursor string  `json:"cursor"`
+}
+
+type Fill struct {
+	EntryId            string    `json:"entry_id"`
+	TradeId            string    `json:"trade_id"`
+	OrderId            string    `json:"order_id"`
+	TradeTime          time.Time `json:"trade_time"`
+	TradeType          string    `json:"trade_type"`
+	Price              float64   `json:"price,string"`
+	Size               float64   `json:"size,string"`
+	Commission         float64   `json:"commission,string"`
+	ProductId          string    `json:"product_id"`
+	SequenceTimestamp  time.Time `json:"sequence_timestamp"`
+	LiquidityIndicator string    `json:"liquidity_indicator"`
+	SizeInQuote        bool      `json:"size_in_quote"`
+	UserId             string    `json:"user_id"`
+	Side               OrderSide `json:"side"`
+}
 
 const ADVANCED_TRADE_FILLS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/fills"
 
 func (c *AdvancedTradeClient) GetFills(ctx context.Context, params *FillParams) (*Fills, error) {
-	panic("not implemented")
+	return http_helpers.GetJSONFn[*Fills](ctx, c.cl, ADVANCED_TRADE_FILLS_URL, nil, func(r *http.Request) {
+		if params == nil {
+			return
+		}
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			Add("product_id", params.ProductId).
+			AddCond("order_id", params.OrderId, params.OrderId != "").
+			AddCond("limit", params.Limit, params.Limit != 0).
+			AddCond("cursor", params.Cursor, params.Cursor != "").
+			AddCond("product_id", params.ProductId, params.ProductId != "").
+			AddCond("start_sequence_timestamp", params.StartSequenceTimestamp, params.StartSequenceTimestamp != time.Time{}).
+			AddCond("end_sequence_timestamp", params.EndSequenceTimestamp, params.EndSequenceTimestamp != time.Time{}).
+			Encode()
+	})
 }
 
 type TransactionsSummaryParams struct {
@@ -331,6 +364,6 @@ type TransactionsSummary struct{}
 
 const ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL = "https://api.coinbase.com/api/v3/brokerage/transaction_summary"
 
-func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (*TransactionsSummary, error) {
+func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (json.RawMessage, error) {
 	panic("not implemented")
 }
