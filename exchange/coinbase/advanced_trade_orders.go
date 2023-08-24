@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/tjudice/util/go/network/http_helpers"
@@ -360,10 +361,72 @@ type TransactionsSummaryParams struct {
 	ContractExpiryType ContractExpiryType
 }
 
-type TransactionsSummary struct{}
+type TransactionsSummary struct {
+	TotalVolume             float64              `json:"total_volume"`
+	TotalFees               float64              `json:"total_fees"`
+	FeeTier                 *FeeTier             `json:"fee_tier"`
+	MarginRate              *MarginRate          `json:"margin_rate"`
+	GoodsAndServicesTax     *GoodsAndServicesTax `json:"goods_and_services_tax"`
+	AdvancedTradeOnlyVolume float64              `json:"advanced_trade_only_volume"`
+	AdvancedTradeOnlyFees   float64              `json:"advanced_trade_only_fees"`
+	CoinbaseProVolume       float64              `json:"coinbase_pro_volume"`
+	CoinbaseProFees         float64              `json:"coinbase_pro_fees"`
+}
+
+type FeeTier struct {
+	PricingTier  string  `json:"pricing_tier"`
+	UsdFrom      float64 `json:"usd_from"`
+	UsdTo        float64 `json:"usd_to"`
+	TakerFeeRate float64 `json:"taker_fee_rate"`
+	MakerFeeRate float64 `json:"maker_fee_rate"`
+}
+
+type feeTierWrapper struct {
+	PricingTier  string `json:"pricing_tier"`
+	UsdFrom      string `json:"usd_from"`
+	UsdTo        string `json:"usd_to"`
+	TakerFeeRate string `json:"taker_fee_rate"`
+	MakerFeeRate string `json:"maker_fee_rate"`
+}
+
+func (f *FeeTier) UnmarshalJSON(bts []byte) error {
+	var wrapper feeTierWrapper
+	err := json.Unmarshal(bts, &wrapper)
+	if err != nil {
+		return err
+	}
+	*f = FeeTier{
+		PricingTier:  wrapper.PricingTier,
+		UsdFrom:      fastfloat.ParseBestEffort(strings.Replace(wrapper.UsdFrom, ",", "", -1)),
+		UsdTo:        fastfloat.ParseBestEffort(strings.Replace(wrapper.UsdTo, ",", "", -1)),
+		TakerFeeRate: fastfloat.ParseBestEffort(wrapper.TakerFeeRate),
+		MakerFeeRate: fastfloat.ParseBestEffort(wrapper.MakerFeeRate),
+	}
+	return nil
+}
+
+type MarginRate struct {
+	Value string `json:"value"`
+}
+
+type GoodsAndServicesTax struct {
+	Rate string `json:"rate"`
+	Type string `json:"type"`
+}
 
 const ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL = "https://api.coinbase.com/api/v3/brokerage/transaction_summary"
 
-func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (json.RawMessage, error) {
-	panic("not implemented")
+func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (*TransactionsSummary, error) {
+	return http_helpers.GetJSONFn[*TransactionsSummary](ctx, c.cl, ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL, nil, func(r *http.Request) {
+		if params == nil {
+			return
+		}
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
+			AddCond("start_date", params.StartDate, params.StartDate != time.Time{}).
+			AddCond("end_date", params.EndDate, params.EndDate != time.Time{}).
+			AddCond("user_native_currency", params.UserNativeCurrency, params.UserNativeCurrency != "").
+			AddCond("product_type", params.ProductType, params.ProductType != "").
+			AddCond("contract_expiry_type", params.ContractExpiryType, params.ContractExpiryType != "").
+			Encode()
+	})
 }

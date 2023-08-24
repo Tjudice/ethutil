@@ -66,5 +66,5 @@ func TestGetTransactionsSummary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_ = res
+	log.Printf("%+v", res)
 }
