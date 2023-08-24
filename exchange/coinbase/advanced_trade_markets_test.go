@@ -16,23 +16,23 @@ func getAdvancedTradeClient2() *coinbase.AdvancedTradeClient {
 	return coinbase.NewAdvancedTradeClient(acc)
 }
 
-// func TestGetBestBidAsk(t *testing.T) {
-// 	cl := getAdvancedTradeClient2()
-// 	res, err := cl.GetBestBidAsk(context.TODO(), []string{"BTC-USD", "ETH-USD"})
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Println(res.PriceBooks[0].Bids[0])
-// }
+func TestGetBestBidAsk(t *testing.T) {
+	cl := getAdvancedTradeClient2()
+	res, err := cl.GetBestBidAsk(context.TODO(), []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Println(res.PriceBooks[0].Bids[0])
+}
 
-// func TestGetOrderbook(t *testing.T) {
-// 	cl := getAdvancedTradeClient2()
-// 	res, err := cl.GetOrderbook(context.TODO(), "NEST-USD", 10)
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	log.Println(res)
-// }
+func TestGetOrderbook(t *testing.T) {
+	cl := getAdvancedTradeClient2()
+	res, err := cl.GetOrderbook(context.TODO(), "NEST-USD", 10)
+	if err != nil {
+		t.Fatal(err)
+	}
+	log.Println(res)
+}
 
 func TestGetMarketsAdvanced(t *testing.T) {
 	cl := getAdvancedTradeClient2()
@@ -64,5 +64,16 @@ func TestGetMarketCandles(t *testing.T) {
 	}
 	for _, c := range res.Candles {
 		log.Printf("%+v", c)
+	}
+}
+
+func TestGetAdvancedMarketTrades(t *testing.T) {
+	cl := getAdvancedTradeClient2()
+	res, err := cl.GetMarketTrades(context.TODO(), "BTC-USD", 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, trade := range res.Trades {
+		log.Printf("%+v", trade)
 	}
 }

@@ -255,12 +255,25 @@ func (c *AdvancedTradeClient) GetCandles(ctx context.Context, marketId string, g
 	})
 }
 
-type AdvancedTradeMarketTrade struct{}
+type AdvancedTradeMarketTrade struct {
+	TradeId   int64     `json:"trade_id,string"`
+	ProductId string    `json:"product_id"`
+	Price     float64   `json:"price,string"`
+	Size      float64   `json:"size,string"`
+	Time      time.Time `json:"time"`
+	Side      string    `json:"side"`
+	Bid       string    `json:"bid"`
+	Ask       string    `json:"ask"`
+}
 
-type AdvancedTradeMarketTrades struct{}
+type AdvancedTradeMarketTrades struct {
+	Trades []*AdvancedTradeMarketTrade
+}
 
 const ADVANCED_TRADE_MARKET_TRADES_URL = "https://api.coinbase.com/api/v3/brokerage/products/%s/ticker"
 
 func (c *AdvancedTradeClient) GetMarketTrades(ctx context.Context, marketId string, limit int) (*AdvancedTradeMarketTrades, error) {
-	panic("not implemented")
+	return http_helpers.GetJSONFn[*AdvancedTradeMarketTrades](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_MARKET_TRADES_URL, marketId), nil, func(r *http.Request) {
+		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).AddIfNotDefault("limit", limit, 0).Encode()
+	})
 }
