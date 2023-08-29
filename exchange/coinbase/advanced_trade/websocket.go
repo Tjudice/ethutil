@@ -22,6 +22,7 @@ const (
 	CandlesChannel       Channel = "candles"
 	MarketTradesChannel  Channel = "market_trades"
 	StatusChannel        Channel = "status"
+	TickerChannel        Channel = "ticker"
 )
 
 type SubscribeMsg struct {
@@ -256,4 +257,34 @@ func (s *StatusFeedItem) Seq() int64 {
 
 func (s *StatusFeedItem) Clone() WebsocketMessage {
 	return new(StatusFeedItem)
+}
+
+type TickerFeedItem struct {
+	MessageDetails
+	Events []*TickerEvent `json:"events"`
+}
+
+type TickerEvent struct {
+	Type    string    `json:"type"`
+	Tickers []*Ticker `json:"tickers"`
+}
+
+type Ticker struct {
+	Type             string  `json:"type"`
+	ProductId        string  `json:"product_id"`
+	Price            float64 `json:"price,string"`
+	Volume24H        float64 `json:"volume_24_h,string"`
+	Low24H           float64 `json:"low_24_h,string"`
+	High24H          float64 `json:"high_24_h,string"`
+	Low52W           float64 `json:"low_52_w,string"`
+	High52W          float64 `json:"high_52_w,string"`
+	PercentChange24h float64 `json:"price_percent_chg_24_h,string"`
+}
+
+func (s *TickerFeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *TickerFeedItem) Clone() WebsocketMessage {
+	return new(TickerFeedItem)
 }

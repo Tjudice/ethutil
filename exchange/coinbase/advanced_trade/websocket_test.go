@@ -72,7 +72,7 @@ func TestSubscribeStatus(t *testing.T) {
 	go func() {
 		for {
 			x := <-conn.C()
-			log.Printf("%+v", x)
+			log.Printf("%T %+v", x, x)
 
 		}
 	}()
