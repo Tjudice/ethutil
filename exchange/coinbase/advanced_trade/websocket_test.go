@@ -26,7 +26,7 @@ func TestSubscribeHeartbeats(t *testing.T) {
 	go func() {
 		for {
 			x := <-conn.C()
-			log.Println(x)
+			log.Printf("%+v", x)
 		}
 	}()
 	time.Sleep(10 * time.Second)
@@ -41,7 +41,39 @@ func TestSubscribeCandles(t *testing.T) {
 	go func() {
 		for {
 			x := <-conn.C()
-			log.Println(x)
+			log.Printf("%+v", x)
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
+
+func TestSubscribeMarketTrades(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.MarketTradesChannel, []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Printf("%+v", x)
+
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
+
+func TestSubscribeStatus(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.StatusChannel, []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Printf("%+v", x)
+
 		}
 	}()
 	time.Sleep(10 * time.Second)

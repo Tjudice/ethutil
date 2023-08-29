@@ -20,6 +20,8 @@ const (
 	SubscriptionsChannel Channel = "subscriptions"
 	HeartbeatsChannel    Channel = "heartbeats"
 	CandlesChannel       Channel = "candles"
+	MarketTradesChannel  Channel = "market_trades"
+	StatusChannel        Channel = "status"
 )
 
 type SubscribeMsg struct {
@@ -102,7 +104,9 @@ func (c *Conn) C() <-chan WebsocketMessage {
 var messageTypeChoice = map[Channel]WebsocketMessage{
 	SubscriptionsChannel: &Subscriptions{},
 	HeartbeatsChannel:    &Heartbeats{},
-	CandlesChannel:       &CandlesFeed{},
+	CandlesChannel:       &CandlesFeedItem{},
+	MarketTradesChannel:  &MarketTradesFeedItem{},
+	StatusChannel:        &StatusFeedItem{},
 }
 
 type MessageType struct {
@@ -168,7 +172,7 @@ func (s *Heartbeats) Clone() WebsocketMessage {
 	return new(Heartbeats)
 }
 
-type CandlesFeed struct {
+type CandlesFeedItem struct {
 	MessageDetails
 	Events []*CandleEvent `json:"events"`
 }
@@ -188,10 +192,68 @@ type CandleData struct {
 	Volume    float64 `json:"volume,string"`
 }
 
-func (s *CandlesFeed) Seq() int64 {
+func (s *CandlesFeedItem) Seq() int64 {
 	return s.SequenceNum
 }
 
-func (s *CandlesFeed) Clone() WebsocketMessage {
-	return new(CandlesFeed)
+func (s *CandlesFeedItem) Clone() WebsocketMessage {
+	return new(CandlesFeedItem)
+}
+
+type MarketTradesFeedItem struct {
+	MessageDetails
+	Events []*MarketTradesEvent `json:"events"`
+}
+
+func (s *MarketTradesFeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *MarketTradesFeedItem) Clone() WebsocketMessage {
+	return new(MarketTradesFeedItem)
+}
+
+type MarketTradesEvent struct {
+	Type   string        `json:"type"`
+	Trades []*TradeEvent `json:"trades"`
+}
+
+type TradeEvent struct {
+	TradeId   string    `json:"trade_id"`
+	ProductId string    `json:"product_id"`
+	Price     float64   `json:"price,string"`
+	Size      float64   `json:"size,string"`
+	Side      string    `json:"side"`
+	Time      time.Time `json:"time"`
+}
+
+type StatusFeedItem struct {
+	MessageDetails
+	Events []*StatusEvent `json:"events"`
+}
+
+type StatusEvent struct {
+	Type     string           `json:"type"`
+	Products []*ProductUpdate `json:"products"`
+}
+
+type ProductUpdate struct {
+	ProductType    ProductType `json:"product_type"`
+	ProductId      string      `json:"id"`
+	BaseCurrency   string      `json:"base_currency"`
+	QuoteCurrency  string      `json:"quote_currency"`
+	BaseIncrement  float64     `json:"base_increment,string"`
+	QuoteIncrement float64     `json:"quote_increment,string"`
+	DisplayName    string      `json:"display_name"`
+	Status         string      `json:"status"`
+	StatusMessage  string      `json:"status_message"`
+	MinMarketFunds float64     `json:"min_market_funds,string"`
+}
+
+func (s *StatusFeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *StatusFeedItem) Clone() WebsocketMessage {
+	return new(StatusFeedItem)
 }
