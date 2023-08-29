@@ -24,6 +24,7 @@ const (
 	StatusChannel        Channel = "status"
 	TickerChannel        Channel = "ticker"
 	TickerBatchChannel   Channel = "ticker_batch"
+	Level2Channel        Channel = "level2"
 )
 
 type SubscribeMsg struct {
@@ -111,6 +112,8 @@ var messageTypeChoice = map[Channel]WebsocketMessage{
 	StatusChannel:        &StatusFeedItem{},
 	TickerChannel:        &TickerFeedItem{},
 	TickerBatchChannel:   &TickerBatchFeedItem{},
+	Level2Channel:        &Level2FeedItem{},
+	Channel("l2_data"):   &Level2FeedItem{},
 }
 
 type MessageType struct {
@@ -127,7 +130,7 @@ func parseMessage(bts []byte) (WebsocketMessage, error) {
 	if !ok {
 		log.Println(msgType.Channel)
 		log.Println(string(bts))
-		panic("a")
+		panic(msgType.Channel)
 	}
 	typedMessage := schem.Clone()
 	err = json.Unmarshal(bts, &typedMessage)
@@ -303,4 +306,31 @@ func (s *TickerBatchFeedItem) Seq() int64 {
 
 func (s *TickerBatchFeedItem) Clone() WebsocketMessage {
 	return new(TickerBatchFeedItem)
+}
+
+type Level2FeedItem struct {
+	MessageDetails
+	Events []*Level2Event `json:"events"`
+}
+
+type Level2Event struct {
+	Type      string          `json:"type"`
+	ProductId string          `json:"product_id"`
+	Updates   []*Level2Update `json:"updates"`
+}
+
+type Level2Update struct {
+	Side string `json:"side"`
+	// This field is not populated by the coibnase API for some reason...
+	EventTime   time.Time `json:"event_time"`
+	PriceLevel  float64   `json:"price_level,string"`
+	NewQuantity float64   `json:"new_quantity,string"`
+}
+
+func (s *Level2FeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *Level2FeedItem) Clone() WebsocketMessage {
+	return new(Level2FeedItem)
 }

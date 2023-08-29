@@ -110,3 +110,19 @@ func TestSubscribeTickerBatch(t *testing.T) {
 	}()
 	time.Sleep(10 * time.Second)
 }
+
+func TestSubscribeLevel2(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.Level2Channel, []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Printf("%T %+v", x, x)
+
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
