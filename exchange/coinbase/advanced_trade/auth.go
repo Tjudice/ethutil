@@ -3,6 +3,7 @@ package advanced_trade
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,10 +37,17 @@ func (a *Auth) SignRequest(requestPath string, r *http.Request) error {
 	return nil
 }
 
+type Sig struct {
+	Key       string `json:"api_key"`
+	Timestamp string `json:"timestamp"`
+	Signature string `json:"signature"`
+}
+
 func (a *Auth) SignWebsocketRequest(channels []string, products []string) (*auth.SignedMessage, error) {
 	access_timestamp := time.Now().Unix()
 	channelStr := strings.Join(channels, "") + strings.Join(products, ",")
 	message := strconv.FormatInt(access_timestamp, 10) + channelStr
+	log.Println(message)
 	secretHmac := hmac.New(sha256.New, []byte(a.API_SECRET))
 	_, err := secretHmac.Write([]byte(message))
 	if err != nil {

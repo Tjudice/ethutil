@@ -13,7 +13,7 @@ import (
 	"github.com/valyala/fastjson/fastfloat"
 )
 
-type ExchangeWebsocket struct {
+type Conn struct {
 	ch   chan WebsocketMessage
 	conn *websocket.Conn
 	auth auth.Authenticator
@@ -40,7 +40,7 @@ type WebsocketMessage interface {
 	Clone() WebsocketMessage
 }
 
-func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*ExchangeWebsocket, error) {
+func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*Conn, error) {
 	conn, _, err := websocket.DefaultDialer.DialContext(ctx, COINBASE_EXCHANGE_WSS_URL_FEED, nil)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (c *Client) Subscribe(ctx context.Context, products []string, channels []an
 	if err != nil {
 		return nil, err
 	}
-	wsConn := &ExchangeWebsocket{
+	wsConn := &Conn{
 		conn: conn,
 		auth: c.auth,
 		ch:   make(chan WebsocketMessage),
@@ -73,7 +73,7 @@ func (c *Client) Subscribe(ctx context.Context, products []string, channels []an
 	return wsConn, nil
 }
 
-func (c *ExchangeWebsocket) Unsubscribe(ctx context.Context, products []string, channels []any) error {
+func (c *Conn) Unsubscribe(ctx context.Context, products []string, channels []any) error {
 	msg := &SubscribeMsg{
 		Type:       "unsubscribe",
 		ProductIds: products,
@@ -82,7 +82,7 @@ func (c *ExchangeWebsocket) Unsubscribe(ctx context.Context, products []string, 
 	return c.conn.WriteJSON(msg)
 }
 
-func (c *ExchangeWebsocket) Listen() error {
+func (c *Conn) Listen() error {
 	defer c.conn.Close()
 	for {
 		_, msg, err := c.conn.ReadMessage()
@@ -99,7 +99,7 @@ func (c *ExchangeWebsocket) Listen() error {
 	}
 }
 
-func (c *ExchangeWebsocket) C() <-chan WebsocketMessage {
+func (c *Conn) C() <-chan WebsocketMessage {
 	return c.ch
 }
 
