@@ -23,6 +23,7 @@ const (
 	MarketTradesChannel  Channel = "market_trades"
 	StatusChannel        Channel = "status"
 	TickerChannel        Channel = "ticker"
+	TickerBatchChannel   Channel = "ticker_batch"
 )
 
 type SubscribeMsg struct {
@@ -108,6 +109,8 @@ var messageTypeChoice = map[Channel]WebsocketMessage{
 	CandlesChannel:       &CandlesFeedItem{},
 	MarketTradesChannel:  &MarketTradesFeedItem{},
 	StatusChannel:        &StatusFeedItem{},
+	TickerChannel:        &TickerFeedItem{},
+	TickerBatchChannel:   &TickerBatchFeedItem{},
 }
 
 type MessageType struct {
@@ -287,4 +290,17 @@ func (s *TickerFeedItem) Seq() int64 {
 
 func (s *TickerFeedItem) Clone() WebsocketMessage {
 	return new(TickerFeedItem)
+}
+
+type TickerBatchFeedItem struct {
+	MessageDetails
+	Events []*TickerEvent `json:"events"`
+}
+
+func (s *TickerBatchFeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *TickerBatchFeedItem) Clone() WebsocketMessage {
+	return new(TickerBatchFeedItem)
 }

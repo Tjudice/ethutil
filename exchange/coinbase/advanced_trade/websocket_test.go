@@ -78,3 +78,35 @@ func TestSubscribeStatus(t *testing.T) {
 	}()
 	time.Sleep(10 * time.Second)
 }
+
+func TestSubscribeTicker(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.TickerChannel, []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Printf("%T %+v", x, x)
+
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
+
+func TestSubscribeTickerBatch(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.TickerBatchChannel, []string{"BTC-USD", "ETH-USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			log.Printf("%T %+v", x, x)
+
+		}
+	}()
+	time.Sleep(10 * time.Second)
+}
