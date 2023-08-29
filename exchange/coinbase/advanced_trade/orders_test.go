@@ -1,4 +1,4 @@
-package coinbase_test
+package advanced_trade_test
 
 import (
 	"context"
@@ -7,17 +7,18 @@ import (
 	"testing"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
+	"github.com/tjudice/ethutil/exchange/coinbase/advanced_trade"
 )
 
-func getAdvancedTradeClient3() *coinbase.AdvancedTradeClient {
+func getAdvancedTradeClient3() *advanced_trade.Client {
 	acctEnv := os.Getenv("ADVANCED_TRADE_AUTH_FILE_PATH")
-	acc, _ := coinbase.LoadAccount(coinbase.AdvancedTradeAuth, acctEnv)
-	return coinbase.NewAdvancedTradeClient(acc)
+	acc, _ := coinbase.LoadAccount(coinbase.AdvancedTrade, acctEnv)
+	return advanced_trade.NewClient(acc)
 }
 
 func TestGetOrders(t *testing.T) {
 	cl := getAdvancedTradeClient3()
-	res, err := cl.GetOrders(context.TODO(), &coinbase.OrderParams{
+	res, err := cl.GetOrders(context.TODO(), &advanced_trade.OrderParams{
 		Limit: 3,
 	})
 	if err != nil {
@@ -30,7 +31,7 @@ func TestGetOrders(t *testing.T) {
 
 func TestGetOrder(t *testing.T) {
 	cl := getAdvancedTradeClient3()
-	res, err := cl.GetOrders(context.TODO(), &coinbase.OrderParams{
+	res, err := cl.GetOrders(context.TODO(), &advanced_trade.OrderParams{
 		Limit: 1,
 	})
 	if err != nil {
@@ -48,7 +49,7 @@ func TestGetOrder(t *testing.T) {
 
 func TestGetFills(t *testing.T) {
 	cl := getAdvancedTradeClient3()
-	res, err := cl.GetFills(context.TODO(), &coinbase.FillParams{
+	res, err := cl.GetFills(context.TODO(), &advanced_trade.FillParams{
 		Limit: 1,
 	})
 	if err != nil {
@@ -62,7 +63,7 @@ func TestGetFills(t *testing.T) {
 
 func TestGetTransactionsSummary(t *testing.T) {
 	cl := getAdvancedTradeClient3()
-	res, err := cl.GetTransactionsSummary(context.TODO(), &coinbase.TransactionsSummaryParams{})
+	res, err := cl.GetTransactionsSummary(context.TODO(), &advanced_trade.TransactionsSummaryParams{})
 	if err != nil {
 		t.Fatal(err)
 	}

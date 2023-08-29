@@ -1,4 +1,4 @@
-package coinbase
+package advanced_trade
 
 import (
 	"context"
@@ -30,7 +30,7 @@ type Tick struct {
 
 const ADVANCED_TRADE_BEST_BID_ASK_URL = "https://api.coinbase.com/api/v3/brokerage/best_bid_ask"
 
-func (c *AdvancedTradeClient) GetBestBidAsk(ctx context.Context, productIds []string) (*BestBidAsks, error) {
+func (c *Client) GetBestBidAsk(ctx context.Context, productIds []string) (*BestBidAsks, error) {
 	if len(productIds) == 0 {
 		return nil, fmt.Errorf("GetBestBidAsk: must provide at least 1 product id")
 	}
@@ -39,11 +39,11 @@ func (c *AdvancedTradeClient) GetBestBidAsk(ctx context.Context, productIds []st
 	})
 }
 
-type OrderbookWrapperAdvancedTrade struct {
-	Pricebook *AdvancedTradeOrderbook `json:"pricebook"`
+type orderbookWrapper struct {
+	Pricebook *Orderbook `json:"pricebook"`
 }
 
-type AdvancedTradeOrderbook struct {
+type Orderbook struct {
 	ProductId string    `json:"product_id"`
 	Bids      []*Tick   `json:"bids"`
 	Asks      []*Tick   `json:"asks"`
@@ -52,8 +52,8 @@ type AdvancedTradeOrderbook struct {
 
 const ADVANCED_TRADE_ORDERBOOK_URL = "https://api.coinbase.com/api/v3/brokerage/product_book"
 
-func (c *AdvancedTradeClient) GetOrderbook(ctx context.Context, productId string, limit int) (*AdvancedTradeOrderbook, error) {
-	wrapper, err := http_helpers.GetJSONFn[*OrderbookWrapperAdvancedTrade](ctx, c.cl, ADVANCED_TRADE_ORDERBOOK_URL, nil, func(r *http.Request) {
+func (c *Client) GetOrderbook(ctx context.Context, productId string, limit int) (*Orderbook, error) {
+	wrapper, err := http_helpers.GetJSONFn[*orderbookWrapper](ctx, c.cl, ADVANCED_TRADE_ORDERBOOK_URL, nil, func(r *http.Request) {
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
 			Add("product_id", productId).
 			Add("limit", limit, limit != 0).
@@ -73,7 +73,7 @@ type GetMarketParams struct {
 	ContractExpiryType ContractExpiryType
 }
 
-type AdvancedTradeMarket struct {
+type Market struct {
 	ProductId                 string      `json:"product_id"`
 	Price                     float64     `json:"price,string"`
 	PricePercentageChange24H  float64     `json:"price_percentage_change_24h,string"`
@@ -108,11 +108,11 @@ type AdvancedTradeMarket struct {
 	PriceIncrement            float64     `json:"price_increment,string"`
 }
 
-func (a *AdvancedTradeMarket) UnmarshalJSON(bts []byte) error {
+func (a *Market) UnmarshalJSON(bts []byte) error {
 	if a == nil {
-		a = &AdvancedTradeMarket{}
+		a = &Market{}
 	}
-	var wrapped advancedTradeMarketWrapper
+	var wrapped marketWrapper
 	// ignore because error will occur due to empty string
 	_ = json.Unmarshal(bts, &wrapped)
 	*a = *unwrapMarket(&wrapped)
@@ -122,7 +122,7 @@ func (a *AdvancedTradeMarket) UnmarshalJSON(bts []byte) error {
 // A bug in API returning empty strings instead of zero results in unmarshaler errors
 // So instead we just marshal into this and then port fields over to result structed
 // Against defining a custom float64 type to avoid requiring casting anywhere it is used
-type advancedTradeMarketWrapper struct {
+type marketWrapper struct {
 	ProductId                 string      `json:"product_id"`
 	Price                     string      `json:"price"`
 	PricePercentageChange24H  string      `json:"price_percentage_change_24h"`
@@ -157,8 +157,8 @@ type advancedTradeMarketWrapper struct {
 	PriceIncrement            string      `json:"price_increment"`
 }
 
-func unwrapMarket(wrapped *advancedTradeMarketWrapper) *AdvancedTradeMarket {
-	unwrapped := &AdvancedTradeMarket{
+func unwrapMarket(wrapped *marketWrapper) *Market {
+	unwrapped := &Market{
 		ProductId:                 wrapped.ProductId,
 		BaseName:                  wrapped.BaseName,
 		Price:                     fastfloat.ParseBestEffort(wrapped.Price),
@@ -195,14 +195,14 @@ func unwrapMarket(wrapped *advancedTradeMarketWrapper) *AdvancedTradeMarket {
 	return unwrapped
 }
 
-type AdvancedTradeMarkets struct {
-	Products []*AdvancedTradeMarket `json:"products"`
+type Markets struct {
+	Products []*Market `json:"products"`
 }
 
 const ADVANCED_TRADE_GET_MARKETS_URL = "https://api.coinbase.com/api/v3/brokerage/products"
 
-func (c *AdvancedTradeClient) GetMarkets(ctx context.Context, params *GetMarketParams) (*AdvancedTradeMarkets, error) {
-	return http_helpers.GetJSONFn[*AdvancedTradeMarkets](ctx, c.cl, ADVANCED_TRADE_GET_MARKETS_URL, nil, func(r *http.Request) {
+func (c *Client) GetMarkets(ctx context.Context, params *GetMarketParams) (*Markets, error) {
+	return http_helpers.GetJSONFn[*Markets](ctx, c.cl, ADVANCED_TRADE_GET_MARKETS_URL, nil, func(r *http.Request) {
 		if params == nil {
 			return
 		}
@@ -218,11 +218,11 @@ func (c *AdvancedTradeClient) GetMarkets(ctx context.Context, params *GetMarketP
 
 const ADVANCED_TRADE_GET_MARKET_URL = "https://api.coinbase.com/api/v3/brokerage/products/%s"
 
-func (c *AdvancedTradeClient) GetMarket(ctx context.Context, marketId string) (*AdvancedTradeMarket, error) {
-	return http_helpers.GetJSON[*AdvancedTradeMarket](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_GET_MARKET_URL, marketId), nil)
+func (c *Client) GetMarket(ctx context.Context, marketId string) (*Market, error) {
+	return http_helpers.GetJSON[*Market](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_GET_MARKET_URL, marketId), nil)
 }
 
-type AdvancedTradeCandle struct {
+type Candle struct {
 	Start  int64   `json:"start,string"`
 	High   float64 `json:"high,string"`
 	Low    float64 `json:"low,string"`
@@ -231,8 +231,8 @@ type AdvancedTradeCandle struct {
 	Volume float64 `json:"volume,string"`
 }
 
-type AdvancedTradeCandles struct {
-	Candles []*AdvancedTradeCandle `json:"candles"`
+type Candles struct {
+	Candles []*Candle `json:"candles"`
 }
 
 const ADVANCED_TRADE_CANDLES_URL = "https://api.coinbase.com/api/v3/brokerage/products/%s/candles"
@@ -250,8 +250,8 @@ var (
 	CANDLE_GRANULARITY_1_DAY     CandleGranularity = "ONE_DAY"
 )
 
-func (c *AdvancedTradeClient) GetCandles(ctx context.Context, marketId string, granularity CandleGranularity, start, end int64) (*AdvancedTradeCandles, error) {
-	return http_helpers.GetJSONFn[*AdvancedTradeCandles](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_CANDLES_URL, marketId), nil, func(r *http.Request) {
+func (c *Client) GetCandles(ctx context.Context, marketId string, granularity CandleGranularity, start, end int64) (*Candles, error) {
+	return http_helpers.GetJSONFn[*Candles](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_CANDLES_URL, marketId), nil, func(r *http.Request) {
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
 			Add("granularity", granularity).
 			AddCond("start", start, start != 0 && end != 0).
@@ -259,7 +259,7 @@ func (c *AdvancedTradeClient) GetCandles(ctx context.Context, marketId string, g
 	})
 }
 
-type AdvancedTradeMarketTrade struct {
+type MarketTrade struct {
 	TradeId   int64     `json:"trade_id,string"`
 	ProductId string    `json:"product_id"`
 	Price     float64   `json:"price,string"`
@@ -270,14 +270,14 @@ type AdvancedTradeMarketTrade struct {
 	Ask       string    `json:"ask"`
 }
 
-type AdvancedTradeMarketTrades struct {
-	Trades []*AdvancedTradeMarketTrade
+type MarketTrades struct {
+	Trades []*MarketTrade
 }
 
 const ADVANCED_TRADE_MARKET_TRADES_URL = "https://api.coinbase.com/api/v3/brokerage/products/%s/ticker"
 
-func (c *AdvancedTradeClient) GetMarketTrades(ctx context.Context, marketId string, limit int) (*AdvancedTradeMarketTrades, error) {
-	return http_helpers.GetJSONFn[*AdvancedTradeMarketTrades](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_MARKET_TRADES_URL, marketId), nil, func(r *http.Request) {
+func (c *Client) GetMarketTrades(ctx context.Context, marketId string, limit int) (*MarketTrades, error) {
+	return http_helpers.GetJSONFn[*MarketTrades](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_MARKET_TRADES_URL, marketId), nil, func(r *http.Request) {
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
 			AddCond("limit", limit, limit != 0).
 			Encode()

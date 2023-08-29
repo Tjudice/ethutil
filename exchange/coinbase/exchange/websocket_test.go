@@ -1,4 +1,4 @@
-package coinbase_test
+package exchange_test
 
 import (
 	"context"
@@ -8,15 +8,16 @@ import (
 	"time"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
+	"github.com/tjudice/ethutil/exchange/coinbase/exchange"
 )
 
-func getWsClient() *coinbase.ExchangeClient {
+func getWsClient() *exchange.Client {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, err := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
+	acc, err := coinbase.LoadAccount(coinbase.Exchange, acctEnv)
 	if err != nil {
 		panic(err)
 	}
-	return coinbase.NewExchangeClient(acc)
+	return exchange.NewClient(acc)
 }
 
 func TestSubscribeHeartbeat(t *testing.T) {

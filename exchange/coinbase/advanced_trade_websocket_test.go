@@ -1,1 +1,0 @@
-package coinbase_test

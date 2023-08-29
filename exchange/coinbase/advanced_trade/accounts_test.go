@@ -1,4 +1,4 @@
-package coinbase_test
+package advanced_trade_test
 
 import (
 	"context"
@@ -7,12 +7,13 @@ import (
 	"testing"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
+	"github.com/tjudice/ethutil/exchange/coinbase/advanced_trade"
 )
 
-func getAdvancedTradeClient() *coinbase.AdvancedTradeClient {
+func getAdvancedTradeClient() *advanced_trade.Client {
 	acctEnv := os.Getenv("ADVANCED_TRADE_AUTH_FILE_PATH")
-	acc, _ := coinbase.LoadAccount(coinbase.AdvancedTradeAuth, acctEnv)
-	return coinbase.NewAdvancedTradeClient(acc)
+	acc, _ := coinbase.LoadAccount(coinbase.AdvancedTrade, acctEnv)
+	return advanced_trade.NewClient(acc)
 }
 
 func TestGetAccounts(t *testing.T) {

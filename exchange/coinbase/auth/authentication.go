@@ -1,13 +1,10 @@
-package coinbase
+package auth
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
-	"os"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 type Transport struct {
@@ -49,41 +46,19 @@ func cloneRequest(r *http.Request) *http.Request {
 	return r2
 }
 
-type AuthenticationType int
-
-var (
-	ExchangeAuth      AuthenticationType = 1
-	AdvancedTradeAuth AuthenticationType = 2
-	OAUTH2            AuthenticationType = 3
-)
+type SignedMessage struct {
+	Key        string `json:"key"`
+	Timestamp  string `json:"timestamp"`
+	Passphrase string `json:"passphrase,omitempty"`
+	Sig        string `json:"signature"`
+}
 
 type Authenticator interface {
 	SignRequest(requestPath string, r *http.Request) error
 	SignWebsocketRequest(channels []string, products []string) (*SignedMessage, error)
 }
 
-func LoadAccount(accountType AuthenticationType, filepath string) (Authenticator, error) {
-	bts, err := os.ReadFile(filepath)
-	if err != nil {
-		return nil, err
-	}
-	var out Authenticator
-	switch accountType {
-	case ExchangeAuth:
-		out = &ExchangeAccountAuth{}
-	case AdvancedTradeAuth:
-		out = &AdvancedTradeAuthenticator{}
-	case OAUTH2:
-		panic("not implemented")
-	}
-	err = yaml.Unmarshal(bts, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func encodeBody(r *http.Request) (string, error) {
+func EncodeBody(r *http.Request) (string, error) {
 	if r.Body == nil {
 		return "", nil
 	}

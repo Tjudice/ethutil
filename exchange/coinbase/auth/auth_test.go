@@ -1,4 +1,4 @@
-package coinbase_test
+package auth_test
 
 import (
 	"io"
@@ -12,7 +12,7 @@ import (
 
 func TestGetAuthentication(t *testing.T) {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, err := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
+	acc, err := coinbase.LoadAccount(coinbase.Exchange, acctEnv)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -22,7 +22,7 @@ func TestGetAuthentication(t *testing.T) {
 func TestAuthenticateRequest(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, "https://api.exchange.coinbase.com/accounts", nil)
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, err := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
+	acc, err := coinbase.LoadAccount(coinbase.Exchange, acctEnv)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestAuthenticateRequest(t *testing.T) {
 func TestAuthenticateAdvancedTradeRequest(t *testing.T) {
 	req, _ := http.NewRequest(http.MethodGet, "https://api.coinbase.com/api/v3/brokerage/accounts", nil)
 	acctEnv := os.Getenv("ADVANCED_TRADE_AUTH_FILE_PATH")
-	acc, err := coinbase.LoadAccount(coinbase.AdvancedTradeAuth, acctEnv)
+	acc, err := coinbase.LoadAccount(coinbase.AdvancedTrade, acctEnv)
 	if err != nil {
 		t.Fatal(err)
 	}

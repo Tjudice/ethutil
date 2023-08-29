@@ -1,4 +1,4 @@
-package coinbase
+package exchange
 
 import (
 	"context"
@@ -9,13 +9,14 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/tjudice/ethutil/exchange/coinbase/auth"
 	"github.com/valyala/fastjson/fastfloat"
 )
 
 type ExchangeWebsocket struct {
 	ch   chan WebsocketMessage
 	conn *websocket.Conn
-	auth Authenticator
+	auth auth.Authenticator
 }
 
 const (
@@ -31,7 +32,7 @@ type SubscribeMsg struct {
 
 type SignedSubscribeMsg struct {
 	*SubscribeMsg
-	*SignedMessage
+	*auth.SignedMessage
 }
 
 type WebsocketMessage interface {
@@ -39,7 +40,7 @@ type WebsocketMessage interface {
 	Clone() WebsocketMessage
 }
 
-func (c *ExchangeClient) Subscribe(ctx context.Context, products []string, channels []any) (*ExchangeWebsocket, error) {
+func (c *Client) Subscribe(ctx context.Context, products []string, channels []any) (*ExchangeWebsocket, error) {
 	conn, _, err := websocket.DefaultDialer.DialContext(ctx, COINBASE_EXCHANGE_WSS_URL_FEED, nil)
 	if err != nil {
 		return nil, err

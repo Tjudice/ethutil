@@ -1,4 +1,4 @@
-package coinbase
+package advanced_trade
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/tjudice/util/go/network/http_helpers"
 )
 
-type AccountsWrapper struct {
+type Accounts struct {
 	Accounts []*Account `json:"accounts"`
 	HasNext  bool       `json:"has_next"`
 	Cursor   string     `json:"cursor"`
@@ -38,22 +38,22 @@ type Balance struct {
 
 var ADVANCED_TRADE_ACCOUNTS_URL = "https://api.coinbase.com/api/v3/brokerage/accounts"
 
-func (c *AdvancedTradeClient) GetAccounts(ctx context.Context, limit int, cursor string) (*AccountsWrapper, error) {
-	return http_helpers.GetJSONFn[*AccountsWrapper](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil, func(r *http.Request) {
+func (c *Client) GetAccounts(ctx context.Context, limit int, cursor string) (*Accounts, error) {
+	return http_helpers.GetJSONFn[*Accounts](ctx, c.cl, ADVANCED_TRADE_ACCOUNTS_URL, nil, func(r *http.Request) {
 		r.URL.RawQuery, _ = http_helpers.NewURLEncoder(r.URL.Query()).
 			AddCond("limit", limit, limit != 0).
 			AddCond("cursor", cursor, cursor != "").Encode()
 	})
 }
 
-type AccountWrapper struct {
+type accountWrapper struct {
 	Account *Account `json:"account"`
 }
 
 var ADVANCED_TRADE_ACCOUNT_URL = "https://api.coinbase.com/api/v3/brokerage/accounts/%s"
 
-func (c *AdvancedTradeClient) GetAccount(ctx context.Context, accountUUID string) (*Account, error) {
-	acc, err := http_helpers.GetJSON[*AccountWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ACCOUNT_URL, accountUUID), nil)
+func (c *Client) GetAccount(ctx context.Context, accountUUID string) (*Account, error) {
+	acc, err := http_helpers.GetJSON[*accountWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ACCOUNT_URL, accountUUID), nil)
 	if err != nil {
 		return nil, err
 	}

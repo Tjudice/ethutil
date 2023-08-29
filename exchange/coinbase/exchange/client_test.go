@@ -1,4 +1,4 @@
-package coinbase_test
+package exchange_test
 
 import (
 	"context"
@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/tjudice/ethutil/exchange/coinbase"
+	"github.com/tjudice/ethutil/exchange/coinbase/exchange"
 )
 
-func getClient() *coinbase.ExchangeClient {
+func getClient() *exchange.Client {
 	acctEnv := os.Getenv("AUTH_FILE_PATH")
-	acc, _ := coinbase.LoadAccount(coinbase.ExchangeAuth, acctEnv)
-	return coinbase.NewExchangeClient(acc)
+	acc, _ := coinbase.LoadAccount(coinbase.Exchange, acctEnv)
+	return exchange.NewClient(acc)
 }
 
 func TestGetMarkets(t *testing.T) {

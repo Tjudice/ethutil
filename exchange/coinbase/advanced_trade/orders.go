@@ -1,4 +1,4 @@
-package coinbase
+package advanced_trade
 
 import (
 	"context"
@@ -209,7 +209,7 @@ type SafeOrderFields struct {
 	EditHistory          []string             `json:"edit_history"`
 }
 
-type CustomOrderFields struct {
+type customOrderFields struct {
 	CompletetionPercentage string                                        `json:"completion_percentage"`
 	FilledSize             string                                        `json:"filled_size"`
 	AverageFilledPrice     string                                        `json:"average_filled_price"`
@@ -238,7 +238,7 @@ type AdvancedTradeOrder struct {
 
 type orderWrapper struct {
 	SafeOrderFields
-	CustomOrderFields
+	customOrderFields
 }
 
 func (a *AdvancedTradeOrder) UnmarshalJSON(bts []byte) error {
@@ -283,7 +283,7 @@ func (a *AdvancedTradeOrder) UnmarshalJSON(bts []byte) error {
 
 const ADVANCED_TRADE_ORDERS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/batch"
 
-func (c *AdvancedTradeClient) GetOrders(ctx context.Context, params *OrderParams) (*Orders, error) {
+func (c *Client) GetOrders(ctx context.Context, params *OrderParams) (*Orders, error) {
 	return http_helpers.GetJSONFn[*Orders](ctx, c.cl, ADVANCED_TRADE_ORDERS_URL, nil, func(r *http.Request) {
 		encodeOrderParams(r, params)
 	})
@@ -295,7 +295,7 @@ type singleOrderWrapper struct {
 
 const ADVANCED_TRADE_ORDER_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/%s"
 
-func (c *AdvancedTradeClient) GetOrder(ctx context.Context, orderId string) (*AdvancedTradeOrder, error) {
+func (c *Client) GetOrder(ctx context.Context, orderId string) (*AdvancedTradeOrder, error) {
 	wrapped, err := http_helpers.GetJSON[*singleOrderWrapper](ctx, c.cl, fmt.Sprintf(ADVANCED_TRADE_ORDER_URL, orderId), nil)
 	if err != nil {
 		return nil, err
@@ -336,7 +336,7 @@ type Fill struct {
 
 const ADVANCED_TRADE_FILLS_URL = "https://api.coinbase.com/api/v3/brokerage/orders/historical/fills"
 
-func (c *AdvancedTradeClient) GetFills(ctx context.Context, params *FillParams) (*Fills, error) {
+func (c *Client) GetFills(ctx context.Context, params *FillParams) (*Fills, error) {
 	return http_helpers.GetJSONFn[*Fills](ctx, c.cl, ADVANCED_TRADE_FILLS_URL, nil, func(r *http.Request) {
 		if params == nil {
 			return
@@ -416,7 +416,7 @@ type GoodsAndServicesTax struct {
 
 const ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL = "https://api.coinbase.com/api/v3/brokerage/transaction_summary"
 
-func (c *AdvancedTradeClient) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (*TransactionsSummary, error) {
+func (c *Client) GetTransactionsSummary(ctx context.Context, params *TransactionsSummaryParams) (*TransactionsSummary, error) {
 	return http_helpers.GetJSONFn[*TransactionsSummary](ctx, c.cl, ADVANCED_TRADE_TRANSACTIONS_SUMMARY_URL, nil, func(r *http.Request) {
 		if params == nil {
 			return
