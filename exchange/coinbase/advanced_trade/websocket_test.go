@@ -126,3 +126,26 @@ func TestSubscribeLevel2(t *testing.T) {
 	}()
 	time.Sleep(10 * time.Second)
 }
+
+func TestSubscribeUser(t *testing.T) {
+	cl := getAdvancedTradeClient4()
+	conn, err := cl.Subscribe(context.TODO(), 10, advanced_trade.UserChannel, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	go func() {
+		for {
+			x := <-conn.C()
+			val, ok := x.(*advanced_trade.UserFeedItem)
+			if !ok {
+				continue
+			}
+			for _, v := range val.Events {
+				for _, k := range v.Orders {
+					log.Printf("%+v", k)
+				}
+			}
+		}
+	}()
+	time.Sleep(1000 * time.Second)
+}

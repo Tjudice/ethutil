@@ -25,6 +25,7 @@ const (
 	TickerChannel        Channel = "ticker"
 	TickerBatchChannel   Channel = "ticker_batch"
 	Level2Channel        Channel = "level2"
+	UserChannel          Channel = "user"
 )
 
 type SubscribeMsg struct {
@@ -114,6 +115,7 @@ var messageTypeChoice = map[Channel]WebsocketMessage{
 	TickerBatchChannel:   &TickerBatchFeedItem{},
 	Level2Channel:        &Level2FeedItem{},
 	Channel("l2_data"):   &Level2FeedItem{},
+	UserChannel:          &UserFeedItem{},
 }
 
 type MessageType struct {
@@ -132,6 +134,8 @@ func parseMessage(bts []byte) (WebsocketMessage, error) {
 		log.Println(string(bts))
 		panic(msgType.Channel)
 	}
+	log.Println(string(bts))
+
 	typedMessage := schem.Clone()
 	err = json.Unmarshal(bts, &typedMessage)
 	if err != nil {
@@ -333,4 +337,38 @@ func (s *Level2FeedItem) Seq() int64 {
 
 func (s *Level2FeedItem) Clone() WebsocketMessage {
 	return new(Level2FeedItem)
+}
+
+type UserFeedItem struct {
+	MessageDetails
+	Events []*UserEvent `json:"events"`
+}
+
+type UserEvent struct {
+	Type   string       `json:"type"`
+	Orders []*UserOrder `json:"orders"`
+}
+
+type UserOrder struct {
+	OrderId            string      `json:"order_id"`
+	ClientOrderId      string      `json:"client_order_id"`
+	CumulativeQuantity float64     `json:"cumulative_quantity,string"`
+	LeavesQuantity     float64     `json:"leaves_quantity,string"`
+	AveragePrice       float64     `json:"average_price,string"`
+	TotalFees          float64     `json:"total_fees,string"`
+	Status             OrderStatus `json:"status"`
+	ProductId          string      `json:"product_id"`
+	CreationTime       time.Time   `json:"creation_time"`
+	OrderSide          OrderSide   `json:"order_side"`
+	OrderType          string      `json:"order_type"`
+	CancelReason       string      `json:"cancel_reason"`
+	RejectReason       string      `json:"reject_reason"`
+}
+
+func (s *UserFeedItem) Seq() int64 {
+	return s.SequenceNum
+}
+
+func (s *UserFeedItem) Clone() WebsocketMessage {
+	return new(UserFeedItem)
 }
